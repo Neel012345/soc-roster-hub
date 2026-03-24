@@ -26,6 +26,30 @@
   --card:    #0c111d;
   --radius:  10px;
 }
+body.light {
+  --bg:      #f0f4f8;
+  --s1:      #ffffff;
+  --s2:      #f1f5f9;
+  --s3:      #e2e8f0;
+  --border:  #cbd5e1;
+  --border2: #94a3b8;
+  --accent:  #0099cc;
+  --a2:      #0077aa;
+  --green:   #059669;
+  --yellow:  #d97706;
+  --red:     #dc2626;
+  --orange:  #ea580c;
+  --purple:  #7c3aed;
+  --text:    #0f172a;
+  --text2:   #475569;
+  --muted:   #94a3b8;
+  --card:    #ffffff;
+}
+body.light::before { background:none; }
+body.light .app-header { background:rgba(240,244,248,.95); }
+body.light .tab-nav { background:#f8fafc; }
+body.light table.tt tbody tr:hover { background:rgba(0,153,204,.05); }
+body.light .rc-WO { background:rgba(148,163,184,.25); }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,212,255,.07),transparent);pointer-events:none;z-index:0;}
@@ -301,6 +325,7 @@ table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
     </div>
     <div class="hdr-right">
       <select class="month-sel" id="month-sel" onchange="onMonthChange(this.value)"></select>
+      <button class="btn-sm" id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
       <button class="btn-sm" onclick="signOut()">Sign Out</button>
     </div>
   </header>
@@ -413,6 +438,25 @@ window.addEventListener('load', () => {
         scope: SCOPES,
         callback: handleToken
       });
+
+      // Try to restore session from sessionStorage
+      const saved = sessionStorage.getItem('soc_session');
+      if (saved) {
+        try {
+          const sess = JSON.parse(saved);
+          const age  = Date.now() - sess.savedAt;
+          // Token valid for 1 hour (3600000ms) — restore if fresh
+          if (age < 3300000) {
+            token     = sess.token;
+            userEmail = sess.email;
+            userName  = sess.name;
+            isAdmin   = sess.isAdmin;
+            showLoading('Restoring session…');
+            initApp().catch(() => { sessionStorage.removeItem('soc_session'); hideLoading(); });
+            return;
+          }
+        } catch(e) { sessionStorage.removeItem('soc_session'); }
+      }
     }
   }, 100);
 });
@@ -431,16 +475,38 @@ async function handleToken(resp) {
     userEmail = info.email;
     userName  = info.name || info.email.split('@')[0];
     isAdmin   = userEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+    // Also check Employee_Master for admin flag (supports multiple admins)
+    // This is re-checked after employeeMaster loads in initApp()
     await initApp();
+    // Save session so page refresh doesn't require re-login
+    sessionStorage.setItem('soc_session', JSON.stringify({
+      token, email: userEmail, name: userName, isAdmin, savedAt: Date.now()
+    }));
   } catch(e) {
     hideLoading();
     alert('Failed to load user info: ' + e.message);
   }
 }
 
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('soc_theme', isLight ? 'light' : 'dark');
+}
+
+// Apply saved theme on load
+(function() {
+  const saved = localStorage.getItem('soc_theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+    // Button will be updated when app loads
+  }
+})();
+
 function signOut() {
   token = null; userEmail = null; userName = null; isAdmin = false;
   rosterCache = {}; leaveLogCache = null;
+  sessionStorage.removeItem('soc_session');
   document.getElementById('main-app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
@@ -538,8 +604,15 @@ async function initApp() {
       email: r[3]?.trim().toLowerCase(), shiftGroup: r[4], isAdmin: r[5] === 'Yes'
     }));
 
+  // Re-check admin from Employee_Master (supports multiple admins beyond ADMIN_EMAIL)
+  const empRecord = employeeMaster.find(e => e.email === userEmail.toLowerCase());
+  if (empRecord && empRecord.isAdmin) isAdmin = true;
+
   // Update header
   document.getElementById('hdr-email').textContent = userName + ' · ' + userEmail;
+  // Sync theme button icon
+  const themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) themeBtn.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
   if (isAdmin) document.getElementById('hdr-admin-badge').style.display = 'inline';
 
   // Show admin tab if admin
@@ -609,6 +682,16 @@ function parseRosterRow(row) {
 }
 
 function findMyRow(rows) {
+  // Primary: match by email (col D in Employee_Master maps to roster)
+  // First try email match via employeeMaster lookup
+  if (userEmail) {
+    const empRecord = employeeMaster.find(e => e.email === userEmail.toLowerCase());
+    if (empRecord) {
+      const idx = rows.findIndex(r => r[1]?.trim().toLowerCase() === empRecord.name.toLowerCase());
+      if (idx !== -1) return idx;
+    }
+  }
+  // Fallback: match by display name
   if (!userName) return -1;
   return rows.findIndex(r => r[1]?.trim().toLowerCase() === userName.toLowerCase());
 }
@@ -1075,7 +1158,10 @@ async function loadAdminPanel() {
     const days   = getDaysInMonth(selectedMonth);
     const dow    = getDOWForMonth(selectedMonth);
     const todayD = getTodayDay(selectedMonth);
-    const pending = logRows.filter(r => r[9] === 'Pending');
+    // Worker col layout: 0=ReqID 1=Date 2=Time 3=EmpName 4=Month 5=ReqType
+    // 6=DateAffected 7=OrigShift 8=NewShift 9=SwapPartner 10=Status 11=Notes
+    const STATUS_COL = 10;
+    const pending = logRows.filter(r => (r[STATUS_COL] === 'Pending' || r[9] === 'Pending'));
 
     let html = `
     <div class="sec-hdr">
@@ -1109,14 +1195,14 @@ async function loadAdminPanel() {
         html += `
         <div class="req-card" id="req-${ri}">
           <div class="req-info">
-            <div class="req-id">${r[0]} · ${r[1]} · ${r[2]}</div>
+            <div class="req-id">${r[0]} · ${r[1]} · ${r[4]||r[2]}</div>
             <div class="req-emp">${r[3]}</div>
-            <div class="req-det">${r[4]} · Date: ${r[5]} · ${r[6]} → ${r[7]}${r[8]&&r[8]!=='—'?' · Swap with: '+r[8]:''}</div>
+            <div class="req-det">${r[5]||r[4]} · Date: ${r[6]||r[5]} · ${r[7]||r[6]} → ${r[8]||r[7]}${(r[9]&&r[9]!=='—')?' · Swap with: '+r[9]:''}</div>
           </div>
           <span class="req-status pending">Pending</span>
           <div class="req-actions">
-            <button class="btn btn-success" style="padding:6px 12px;font-size:.76rem" onclick="processRequest(${ri},'Approved','${r[0]}','${r[3]}','${r[5]}','${r[7]}')">✓ Approve</button>
-            <button class="btn btn-danger"  style="padding:6px 12px;font-size:.76rem" onclick="processRequest(${ri},'Rejected','${r[0]}','${r[3]}','${r[5]}','${r[7]}')">✗ Reject</button>
+            <button class="btn btn-success" style="padding:6px 12px;font-size:.76rem" onclick="processRequest(${ri},'Approved','${r[0]}','${r[3]}','${r[6]||r[5]}','${r[8]||r[7]}')">✓ Approve</button>
+            <button class="btn btn-danger"  style="padding:6px 12px;font-size:.76rem" onclick="processRequest(${ri},'Rejected','${r[0]}','${r[3]}','${r[6]||r[5]}','${r[8]||r[7]}')">✗ Reject</button>
           </div>
         </div>`;
       });
@@ -1134,12 +1220,13 @@ async function loadAdminPanel() {
       html += `<p style="font-size:.8rem;color:var(--muted)">No changes recorded yet.</p>`;
     } else {
       all.forEach(r => {
-        const statusColor = r[9]==='Approved'?'var(--green)':r[9]==='Rejected'?'var(--red)':'var(--yellow)';
+        const rStatus = r[10] || r[9] || 'Pending';
+        const statusColor = rStatus==='Approved'?'var(--green)':rStatus==='Rejected'?'var(--red)':'var(--yellow)';
         html += `<div class="audit-row">
           <div class="audit-time">${r[1]||'—'} · ${r[2]||''}</div>
           <div style="flex:1"><strong>${r[3]}</strong> · ${r[4]} · ${r[5]}
             <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem"> ${r[6]}→${r[7]}</span></div>
-          <span style="color:${statusColor};font-size:.72rem;font-family:'JetBrains Mono',monospace">${r[9]||'Pending'}</span>
+          <span style="color:${statusColor};font-size:.72rem;font-family:'JetBrains Mono',monospace">${rStatus}</span>
         </div>`;
       });
     }
@@ -1162,7 +1249,7 @@ async function loadLeaveLog() {
 async function checkPendingRequests() {
   try {
     const rows    = await loadLeaveLog();
-    pendingCount  = rows.filter(r => r[9] === 'Pending').length;
+    pendingCount  = rows.filter(r => r[10] === 'Pending' || r[9] === 'Pending').length;
     const badge   = document.getElementById('pending-badge');
     if (badge) {
       badge.textContent = pendingCount;

@@ -358,14 +358,14 @@ const DOW_MARCH2026 = [0,1,2,3,4,5,6,0,1,2,3,4,5,6,0,1,2,3,4,5,6,0,1,2,3,4,5,6,0
 const DOW_LABELS    = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 const SHIFT_META = {
-  'MS':     {bg:'rgba(77,178,220,.2)',  fg:'#9EDBF5', label:'Morning Shift',       start:'06:00',end:'14:00',emoji:'🌅',allDay:false,nextDay:false},
-  'GS':     {bg:'rgba(16,185,129,.2)', fg:'#6EDDB7', label:'General Shift',        start:'09:00',end:'18:00',emoji:'☀️',allDay:false,nextDay:false},
-  'AS':     {bg:'rgba(244,162,97,.2)', fg:'#F8C47D', label:'Afternoon Shift',      start:'14:00',end:'22:00',emoji:'🌆',allDay:false,nextDay:false},
-  'NS':     {bg:'rgba(139,92,246,.2)', fg:'#C4B5FD', label:'Night Shift',          start:'22:00',end:'06:00',emoji:'🌙',allDay:false,nextDay:true},
-  'WFH-MS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – Morning',        start:'06:00',end:'14:00',emoji:'🏠',allDay:false,nextDay:false},
-  'WFH-GS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – General',        start:'09:00',end:'18:00',emoji:'🏠',allDay:false,nextDay:false},
-  'WFH-AS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – Afternoon',      start:'14:00',end:'22:00',emoji:'🏠',allDay:false,nextDay:false},
-  'WFH-NS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – Night',          start:'22:00',end:'06:00',emoji:'🏠',allDay:false,nextDay:true},
+  'MS':     {bg:'rgba(77,178,220,.2)',  fg:'#9EDBF5', label:'Morning Shift',       start:'07:00',end:'16:30',emoji:'🌅',allDay:false,nextDay:false},
+  'GS':     {bg:'rgba(16,185,129,.2)', fg:'#6EDDB7', label:'General Shift',        start:'10:30',end:'20:00',emoji:'☀️',allDay:false,nextDay:false},
+  'AS':     {bg:'rgba(244,162,97,.2)', fg:'#F8C47D', label:'Afternoon Shift',      start:'12:00',end:'21:30',emoji:'🌆',allDay:false,nextDay:false},
+  'NS':     {bg:'rgba(139,92,246,.2)', fg:'#C4B5FD', label:'Night Shift',          start:'21:30',end:'07:00',emoji:'🌙',allDay:false,nextDay:true},
+  'WFH-MS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – Morning',        start:'07:00',end:'16:30',emoji:'🏠',allDay:false,nextDay:false},
+  'WFH-GS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – General',        start:'10:30',end:'20:00',emoji:'🏠',allDay:false,nextDay:false},
+  'WFH-AS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – Afternoon',      start:'12:00',end:'21:30',emoji:'🏠',allDay:false,nextDay:false},
+  'WFH-NS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – Night',          start:'21:30',end:'07:00',emoji:'🏠',allDay:false,nextDay:true},
   'WO':     {bg:'rgba(71,85,105,.18)', fg:'#94A3B8', label:'Week Off',             allDay:true},
   'VL':     {bg:'rgba(239,68,68,.18)', fg:'#FCA5A5', label:'Vacation Leave',       emoji:'🏖️',allDay:true},
   'CL':     {bg:'rgba(239,68,68,.18)', fg:'#FCA5A5', label:'Casual Leave',         emoji:'📋',allDay:true},
@@ -490,36 +490,18 @@ async function sheetsAppend(sheetName, values) {
   }
 }
 
+// ── Cloudflare Worker proxy caller ──
 async function callAppsScript(payload) {
   const resp = await fetch(APPS_SCRIPT_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...payload, token })
+    body: JSON.stringify({ ...payload, token: token })
   });
   if (!resp.ok) throw new Error('Worker HTTP ' + resp.status);
   const data = await resp.json();
   if (!data.ok) throw new Error(data.error || 'Worker error');
   return data;
 }
-```
-
-The key addition here is `token` — the employee's Google OAuth token is included in every request so the Worker can verify who is calling it.
-
----
-
-### STEP 6 — Leave the Apps Script Alone (or delete it)
-**Why:** The Worker completely replaces it. You don't need to redeploy it, update it, or touch it. You can optionally delete the deployment in Apps Script to keep things tidy, but it causes no harm if you leave it.
-
----
-
-## Summary
-```
-Before:  HTML → (broken GET) → Apps Script → Sheet
-After:   HTML → (POST + token) → Cloudflare Worker → Sheet
-                                  ↑ verifies identity
-                                  ↑ uses Service Account
-                                  ↑ handles CORS properly
-                                  ↑ builds all rows/ranges itself
 
 /* ══════════════════════════════════════════════════════
    INIT
@@ -1240,7 +1222,7 @@ async function saveShiftEdit(empRowIdx, day, oldCode, empName) {
       adminEmail:   userEmail
     });
 
-     // Update local cache
+    // Update local cache
     if (rosterCache[selectedMonth] && rosterCache[selectedMonth][empRowIdx]) {
       rosterCache[selectedMonth][empRowIdx][day + 1] = newCode;
     }
@@ -1306,4 +1288,3 @@ function showToast(msg) {
 </script>
 </body>
 </html>
-  

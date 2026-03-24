@@ -27,29 +27,85 @@
   --radius:  10px;
 }
 body.light {
-  --bg:      #f0f4f8;
+  --bg:      #eef2ff;
   --s1:      #ffffff;
-  --s2:      #f1f5f9;
-  --s3:      #e2e8f0;
-  --border:  #cbd5e1;
+  --s2:      #f0f4ff;
+  --s3:      #e4eaf8;
+  --border:  #c7d2e8;
   --border2: #94a3b8;
-  --accent:  #0099cc;
-  --a2:      #0077aa;
+  --accent:  #0284c7;
+  --a2:      #0369a1;
   --green:   #059669;
   --yellow:  #d97706;
   --red:     #dc2626;
   --orange:  #ea580c;
   --purple:  #7c3aed;
   --text:    #0f172a;
-  --text2:   #475569;
-  --muted:   #94a3b8;
+  --text2:   #334155;
+  --muted:   #64748b;
   --card:    #ffffff;
 }
-body.light::before { background:none; }
-body.light .app-header { background:rgba(240,244,248,.95); }
-body.light .tab-nav { background:#f8fafc; }
-body.light table.tt tbody tr:hover { background:rgba(0,153,204,.05); }
-body.light .rc-WO { background:rgba(148,163,184,.25); }
+body.light::before { background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(99,102,241,.06),transparent); }
+body.light .app-header { background:rgba(238,242,255,.95); border-bottom-color:#c7d2e8; }
+body.light .tab-nav { background:#f5f7ff; border-bottom-color:#c7d2e8; }
+
+/* ── Light mode: shift chips (team table) ── */
+body.light .sh-MS  { background:rgba(14,165,233,.16); color:#0369a1; border:1px solid rgba(14,165,233,.35); }
+body.light .sh-GS  { background:rgba(5,150,105,.14);  color:#065f46; border:1px solid rgba(5,150,105,.32); }
+body.light .sh-AS  { background:rgba(234,88,12,.13);  color:#9a3412; border:1px solid rgba(234,88,12,.30); }
+body.light .sh-NS  { background:rgba(109,40,217,.12); color:#4c1d95; border:1px solid rgba(109,40,217,.28); }
+body.light .sh-WFH { background:rgba(6,182,212,.13);  color:#0e7490; border:1px solid rgba(6,182,212,.30); }
+body.light .sh-WO  { background:rgba(100,116,139,.11);color:#475569; border:1px solid rgba(100,116,139,.22); }
+body.light .sh-VL,
+body.light .sh-CL  { background:rgba(220,38,38,.11);  color:#991b1b; border:1px solid rgba(220,38,38,.25); }
+body.light .sh-CO  { background:rgba(217,119,6,.12);  color:#92400e; border:1px solid rgba(217,119,6,.28); }
+body.light .sh-GH  { background:rgba(5,150,105,.12);  color:#065f46; border:1px solid rgba(5,150,105,.28); }
+
+/* ── Light mode: shift cells (my shifts grid) ── */
+body.light .bg-MS  { background:rgba(14,165,233,.13); border-color:rgba(14,165,233,.40); }
+body.light .bg-GS  { background:rgba(5,150,105,.11);  border-color:rgba(5,150,105,.35); }
+body.light .bg-AS  { background:rgba(234,88,12,.10);  border-color:rgba(234,88,12,.32); }
+body.light .bg-NS  { background:rgba(109,40,217,.10); border-color:rgba(109,40,217,.30); }
+body.light .bg-WFH { background:rgba(6,182,212,.10);  border-color:rgba(6,182,212,.30); }
+body.light .bg-WO  { background:rgba(100,116,139,.09);border-color:rgba(100,116,139,.22); }
+body.light .bg-VL,
+body.light .bg-CL  { background:rgba(220,38,38,.10);  border-color:rgba(220,38,38,.28); }
+body.light .bg-CO  { background:rgba(217,119,6,.10);  border-color:rgba(217,119,6,.30); }
+body.light .bg-GH  { background:rgba(5,150,105,.10);  border-color:rgba(5,150,105,.28); }
+
+/* ── Light mode: shift cell day number & text ── */
+body.light .sc .dn { color:rgba(15,23,42,.45); }
+body.light .sc .tm { color:rgba(15,23,42,.55); }
+
+/* ── Light mode: table tweaks ── */
+body.light table.tt tbody tr:hover { background:rgba(2,132,199,.04); }
+body.light table.tt tbody tr.me    { background:rgba(2,132,199,.07); }
+body.light table.tt tbody tr:hover td.td-name { background:rgba(255,255,255,.98); }
+body.light table.tt tbody tr.me    td.td-name { background:rgba(224,242,254,.85); }
+body.light .wk { background:rgba(0,0,0,.04); }
+body.light .td-today { background:rgba(2,132,199,.07) !important; }
+
+/* ── Light mode: stat boxes ── */
+body.light .stat-box { background:#f0f5ff; border-color:#c7d2e8; }
+
+/* ── Light mode: cards and sections ── */
+body.light .card    { box-shadow:0 1px 4px rgba(0,0,0,.06); }
+body.light .card-sm { background:#f5f8ff; }
+body.light .req-card { background:#f5f8ff; border-color:#c7d2e8; }
+
+/* ── Light mode: filter buttons active states ── */
+body.light .fbtn.on      { background:rgba(2,132,199,.1);  border-color:rgba(2,132,199,.4);  color:#0284c7; }
+body.light .fbtn.on.f-GS { background:rgba(5,150,105,.1);  border-color:rgba(5,150,105,.4);  color:#059669; }
+body.light .fbtn.on.f-AS { background:rgba(217,119,6,.1);  border-color:rgba(217,119,6,.4);  color:#d97706; }
+body.light .fbtn.on.f-NS { background:rgba(109,40,217,.1); border-color:rgba(109,40,217,.4); color:#7c3aed; }
+body.light .fbtn.on.f-WFH{ background:rgba(6,182,212,.1);  border-color:rgba(6,182,212,.4);  color:#0e7490; }
+
+/* ── Light mode: sync-done result box ── */
+body.light .sync-done { background:linear-gradient(135deg,rgba(5,150,105,.08),rgba(2,132,199,.05)); border-color:rgba(5,150,105,.2); }
+
+/* ── Light mode: modal ── */
+body.light #modal-overlay { background:rgba(15,23,42,.5); }
+body.light .modal-box { box-shadow:0 8px 32px rgba(15,23,42,.12); }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,212,255,.07),transparent);pointer-events:none;z-index:0;}
@@ -523,6 +579,8 @@ async function apiFetch(url, opts = {}) {
     const err = await resp.json().catch(() => ({}));
     throw new Error(err.error?.message || `HTTP ${resp.status}`);
   }
+  // 204 No Content (e.g. Calendar DELETE) — no body to parse
+  if (resp.status === 204 || resp.headers.get('content-length') === '0') return {};
   return resp.json();
 }
 

@@ -347,7 +347,7 @@ table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
    CONFIG
 ══════════════════════════════════════════════════════ */
 const SHEET_ID       = '1MY9aFaaUdSmqUP2V3gXt0emNMONlubgOfVqoV2mLpoY';
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwzTEP_jg_N7qQ7g7MgMJi_-mHIT_mcXMIdTyo_G8k1MOavuu0uIh1ziaXs4q7d8n53rg/exec';
+const APPS_SCRIPT_URL = 'https://soc-roster-proxy.navoneel-itorizin-87e.workers.dev';
 const CLIENT_ID   = '135332498104-1jlvua53i6ujahtov3enj1och1ln3o0o.apps.googleusercontent.com';
 const ADMIN_EMAIL = 'navoneel.itorizin@gmail.com';
 const SCOPES      = 'openid email profile https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar';
@@ -490,30 +490,36 @@ async function sheetsAppend(sheetName, values) {
   }
 }
 
-// ── Apps Script caller (no auth needed — runs as sheet owner) ──
 async function callAppsScript(payload) {
-  // Apps Script requires GET with URL params to avoid CORS preflight
-  // POST triggers a preflight that Apps Script doesn't handle
-  const url = new URL(APPS_SCRIPT_URL);
-  url.searchParams.set('payload', JSON.stringify(payload));
-
-  const resp = await fetch(url.toString(), {
-    method: 'GET',
-    redirect: 'follow'
+  const resp = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...payload, token })
   });
-
-  if (!resp.ok) throw new Error('Apps Script HTTP ' + resp.status);
-
-  const text = await resp.text();
-  try {
-    const data = JSON.parse(text);
-    if (!data.ok) throw new Error(data.error || 'Apps Script error');
-    return data;
-  } catch(e) {
-    // If response is not JSON, still treat as success (no-cors redirect case)
-    return { ok: true };
-  }
+  if (!resp.ok) throw new Error('Worker HTTP ' + resp.status);
+  const data = await resp.json();
+  if (!data.ok) throw new Error(data.error || 'Worker error');
+  return data;
 }
+```
+
+The key addition here is `token` — the employee's Google OAuth token is included in every request so the Worker can verify who is calling it.
+
+---
+
+### STEP 6 — Leave the Apps Script Alone (or delete it)
+**Why:** The Worker completely replaces it. You don't need to redeploy it, update it, or touch it. You can optionally delete the deployment in Apps Script to keep things tidy, but it causes no harm if you leave it.
+
+---
+
+## Summary
+```
+Before:  HTML → (broken GET) → Apps Script → Sheet
+After:   HTML → (POST + token) → Cloudflare Worker → Sheet
+                                  ↑ verifies identity
+                                  ↑ uses Service Account
+                                  ↑ handles CORS properly
+                                  ↑ builds all rows/ranges itself
 
 /* ══════════════════════════════════════════════════════
    INIT

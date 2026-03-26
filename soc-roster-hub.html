@@ -27,85 +27,29 @@
   --radius:  10px;
 }
 body.light {
-  --bg:      #eef2ff;
+  --bg:      #f0f4f8;
   --s1:      #ffffff;
-  --s2:      #f0f4ff;
-  --s3:      #e4eaf8;
-  --border:  #c7d2e8;
+  --s2:      #f1f5f9;
+  --s3:      #e2e8f0;
+  --border:  #cbd5e1;
   --border2: #94a3b8;
-  --accent:  #0284c7;
-  --a2:      #0369a1;
+  --accent:  #0099cc;
+  --a2:      #0077aa;
   --green:   #059669;
   --yellow:  #d97706;
   --red:     #dc2626;
   --orange:  #ea580c;
   --purple:  #7c3aed;
   --text:    #0f172a;
-  --text2:   #334155;
-  --muted:   #64748b;
+  --text2:   #475569;
+  --muted:   #94a3b8;
   --card:    #ffffff;
 }
-body.light::before { background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(99,102,241,.06),transparent); }
-body.light .app-header { background:rgba(238,242,255,.95); border-bottom-color:#c7d2e8; }
-body.light .tab-nav { background:#f5f7ff; border-bottom-color:#c7d2e8; }
-
-/* ── Light mode: shift chips (team table) ── */
-body.light .sh-MS  { background:rgba(14,165,233,.16); color:#0369a1; border:1px solid rgba(14,165,233,.35); }
-body.light .sh-GS  { background:rgba(5,150,105,.14);  color:#065f46; border:1px solid rgba(5,150,105,.32); }
-body.light .sh-AS  { background:rgba(234,88,12,.13);  color:#9a3412; border:1px solid rgba(234,88,12,.30); }
-body.light .sh-NS  { background:rgba(109,40,217,.12); color:#4c1d95; border:1px solid rgba(109,40,217,.28); }
-body.light .sh-WFH { background:rgba(6,182,212,.13);  color:#0e7490; border:1px solid rgba(6,182,212,.30); }
-body.light .sh-WO  { background:rgba(100,116,139,.11);color:#475569; border:1px solid rgba(100,116,139,.22); }
-body.light .sh-VL,
-body.light .sh-CL  { background:rgba(220,38,38,.11);  color:#991b1b; border:1px solid rgba(220,38,38,.25); }
-body.light .sh-CO  { background:rgba(217,119,6,.12);  color:#92400e; border:1px solid rgba(217,119,6,.28); }
-body.light .sh-GH  { background:rgba(5,150,105,.12);  color:#065f46; border:1px solid rgba(5,150,105,.28); }
-
-/* ── Light mode: shift cells (my shifts grid) ── */
-body.light .bg-MS  { background:rgba(14,165,233,.13); border-color:rgba(14,165,233,.40); }
-body.light .bg-GS  { background:rgba(5,150,105,.11);  border-color:rgba(5,150,105,.35); }
-body.light .bg-AS  { background:rgba(234,88,12,.10);  border-color:rgba(234,88,12,.32); }
-body.light .bg-NS  { background:rgba(109,40,217,.10); border-color:rgba(109,40,217,.30); }
-body.light .bg-WFH { background:rgba(6,182,212,.10);  border-color:rgba(6,182,212,.30); }
-body.light .bg-WO  { background:rgba(100,116,139,.09);border-color:rgba(100,116,139,.22); }
-body.light .bg-VL,
-body.light .bg-CL  { background:rgba(220,38,38,.10);  border-color:rgba(220,38,38,.28); }
-body.light .bg-CO  { background:rgba(217,119,6,.10);  border-color:rgba(217,119,6,.30); }
-body.light .bg-GH  { background:rgba(5,150,105,.10);  border-color:rgba(5,150,105,.28); }
-
-/* ── Light mode: shift cell day number & text ── */
-body.light .sc .dn { color:rgba(15,23,42,.45); }
-body.light .sc .tm { color:rgba(15,23,42,.55); }
-
-/* ── Light mode: table tweaks ── */
-body.light table.tt tbody tr:hover { background:rgba(2,132,199,.04); }
-body.light table.tt tbody tr.me    { background:rgba(2,132,199,.07); }
-body.light table.tt tbody tr:hover td.td-name { background:rgba(255,255,255,.98); }
-body.light table.tt tbody tr.me    td.td-name { background:rgba(224,242,254,.85); }
-body.light .wk { background:rgba(0,0,0,.04); }
-body.light .td-today { background:rgba(2,132,199,.07) !important; }
-
-/* ── Light mode: stat boxes ── */
-body.light .stat-box { background:#f0f5ff; border-color:#c7d2e8; }
-
-/* ── Light mode: cards and sections ── */
-body.light .card    { box-shadow:0 1px 4px rgba(0,0,0,.06); }
-body.light .card-sm { background:#f5f8ff; }
-body.light .req-card { background:#f5f8ff; border-color:#c7d2e8; }
-
-/* ── Light mode: filter buttons active states ── */
-body.light .fbtn.on      { background:rgba(2,132,199,.1);  border-color:rgba(2,132,199,.4);  color:#0284c7; }
-body.light .fbtn.on.f-GS { background:rgba(5,150,105,.1);  border-color:rgba(5,150,105,.4);  color:#059669; }
-body.light .fbtn.on.f-AS { background:rgba(217,119,6,.1);  border-color:rgba(217,119,6,.4);  color:#d97706; }
-body.light .fbtn.on.f-NS { background:rgba(109,40,217,.1); border-color:rgba(109,40,217,.4); color:#7c3aed; }
-body.light .fbtn.on.f-WFH{ background:rgba(6,182,212,.1);  border-color:rgba(6,182,212,.4);  color:#0e7490; }
-
-/* ── Light mode: sync-done result box ── */
-body.light .sync-done { background:linear-gradient(135deg,rgba(5,150,105,.08),rgba(2,132,199,.05)); border-color:rgba(5,150,105,.2); }
-
-/* ── Light mode: modal ── */
-body.light #modal-overlay { background:rgba(15,23,42,.5); }
-body.light .modal-box { box-shadow:0 8px 32px rgba(15,23,42,.12); }
+body.light::before { background:none; }
+body.light .app-header { background:rgba(240,244,248,.95); }
+body.light .tab-nav { background:#f8fafc; }
+body.light table.tt tbody tr:hover { background:rgba(0,153,204,.05); }
+body.light .rc-WO { background:rgba(148,163,184,.25); }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,212,255,.07),transparent);pointer-events:none;z-index:0;}
@@ -231,6 +175,7 @@ table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
 /* ─── Roster Chips ─── */
 .rc{display:inline-flex;align-items:center;justify-content:center;width:30px;height:24px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;}
 .rc-dim{opacity:.25;}
+.rc.rc-WO{font-size:.55rem;opacity:.5;letter-spacing:.02em;}
 .rc.editable{cursor:pointer;transition:transform .1s;}
 .rc.editable:hover{transform:scale(1.15);z-index:2;position:relative;}
 
@@ -329,6 +274,19 @@ table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
 .sync-done h3{color:var(--green);font-size:1.1rem;margin-bottom:8px;}
 .sync-done p{font-size:.8rem;color:var(--text2);line-height:1.6;}
 .sync-done .sync-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0;}
+
+/* ── Calendar controls bar ── */
+.cal-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.cal-info{font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:4px;}
+.toggle-wrap{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;}
+.toggle{position:relative;width:40px;height:22px;cursor:pointer;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:22px;transition:.3s;}
+.toggle-slider:before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;}
+.toggle input:checked + .toggle-slider{background:var(--green);}
+.toggle input:checked + .toggle-slider:before{transform:translateX(18px);}
+.desync-btn{padding:7px 13px;border-radius:8px;border:1px solid rgba(239,68,68,.4);background:transparent;color:var(--red);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.desync-btn:hover{background:rgba(239,68,68,.1);}
 
 /* ─── Responsive ─── */
 @media(max-width:600px){
@@ -579,8 +537,6 @@ async function apiFetch(url, opts = {}) {
     const err = await resp.json().catch(() => ({}));
     throw new Error(err.error?.message || `HTTP ${resp.status}`);
   }
-  // 204 No Content (e.g. Calendar DELETE) — no body to parse
-  if (resp.status === 204 || resp.headers.get('content-length') === '0') return {};
   return resp.json();
 }
 
@@ -815,8 +771,19 @@ async function loadMyShifts() {
     <div class="sec-hdr">
       <div><h2>🗓️ ${selectedMonth.replace('_',' ')} — ${empName}</h2>
       <p>${workDays} working days · ${cnt['WO']||0} days off</p></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-primary" id="sync-cal-btn" onclick="syncCalendar()">📅 Sync to Google Calendar</button>
+      <div>
+        <div class="cal-controls">
+          <button class="btn btn-primary" id="sync-cal-btn" onclick="syncCalendar()">📅 Sync to SOC Calendar</button>
+          <div class="toggle-wrap">
+            <label class="toggle">
+              <input type="checkbox" id="autosync-toggle" onchange="toggleAutoSync(this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+            <span id="autosync-label" style="color:var(--muted)">Auto-sync: OFF</span>
+          </div>
+          <button class="desync-btn" onclick="openDesyncModal()">🗑️ De-sync</button>
+        </div>
+        <div class="cal-info" id="last-sync-info"></div>
       </div>
     </div>
 
@@ -877,6 +844,8 @@ async function loadMyShifts() {
     <div id="sync-result"></div>`;
 
     el.innerHTML = html;
+    // Load auto-sync preference state
+    setTimeout(loadAutoSyncPref, 0);
   } catch(e) {
     el.innerHTML = `<div class="err-box" style="display:block">❌ Failed to load shifts: ${e.message}</div>`;
   }
@@ -956,6 +925,8 @@ async function submitLeaveRequest(dayKey, currentCode, empName, dateStr) {
     showToast('✅ Request submitted — pending admin approval');
     leaveLogCache = null;
     if (isAdmin) checkPendingRequests();
+    // Auto-sync calendar if enabled (reflects WO/leave visually)
+    autoSyncIfEnabled();
   } catch(e) {
     alert('Failed to submit request: ' + e.message);
   }
@@ -964,6 +935,82 @@ async function submitLeaveRequest(dayKey, currentCode, empName, dateStr) {
 /* ══════════════════════════════════════════════════════
    GOOGLE CALENDAR SYNC
 ══════════════════════════════════════════════════════ */
+/* ── Option B: Dedicated SOC Roster Calendar ────────────────
+   Finds or creates a "SOC Roster" calendar.
+   Deletes ALL events in it for the selected month.
+   Recreates them fresh → zero duplicates possible.
+─────────────────────────────────────────────────────────── */
+
+const SOC_CAL_NAME = 'SOC Roster';
+
+async function getOrCreateSocCalendar() {
+  // Check localStorage cache first
+  const cached = localStorage.getItem('soc_calendar_id_' + userEmail);
+  if (cached) {
+    // Verify it still exists
+    try {
+      await apiFetch(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cached)}`);
+      return cached;
+    } catch(e) {
+      localStorage.removeItem('soc_calendar_id_' + userEmail);
+    }
+  }
+
+  // List all calendars and find "SOC Roster"
+  const list = await apiFetch('https://www.googleapis.com/calendar/v3/users/me/calendarList');
+  const existing = (list.items || []).find(c => c.summary === SOC_CAL_NAME);
+  if (existing) {
+    localStorage.setItem('soc_calendar_id_' + userEmail, existing.id);
+    return existing.id;
+  }
+
+  // Create new "SOC Roster" calendar
+  const created = await apiFetch('https://www.googleapis.com/calendar/v3/calendars', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      summary: SOC_CAL_NAME,
+      description: 'SOC duty roster shifts — auto-synced from SOC Roster Hub',
+      timeZone: 'Asia/Kolkata'
+    })
+  });
+
+  // Set a distinct color for the calendar (teal)
+  await apiFetch(`https://www.googleapis.com/calendar/v3/users/me/calendarList/${encodeURIComponent(created.id)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: created.id, colorId: '7' })
+  }).catch(() => {});
+
+  localStorage.setItem('soc_calendar_id_' + userEmail, created.id);
+  return created.id;
+}
+
+async function deleteAllEventsInMonth(calendarId, ym) {
+  const [year, mo] = ym.split('-').map(Number);
+  const tMin = `${ym}-01T00:00:00Z`;
+  const tMax = `${year}-${String(mo < 12 ? mo+1 : 1).padStart(2,'0')}-01T00:00:00Z`;
+
+  let pageToken = null;
+  let deleted   = 0;
+  do {
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?` +
+      `timeMin=${tMin}&timeMax=${tMax}&maxResults=250&singleEvents=true` +
+      (pageToken ? `&pageToken=${pageToken}` : '');
+    const data = await apiFetch(url);
+    for (const ev of (data.items || [])) {
+      await apiFetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events/${ev.id}`,
+        { method: 'DELETE' }
+      );
+      deleted++;
+    }
+    pageToken = data.nextPageToken || null;
+  } while (pageToken);
+
+  return deleted;
+}
+
 async function syncCalendar() {
   const btn = document.getElementById('sync-cal-btn');
   if (!btn) return;
@@ -983,85 +1030,91 @@ async function syncCalendar() {
     const [year, mo] = ym.split('-').map(Number);
     const days     = getDaysInMonth(selectedMonth);
 
-    // 1. Delete existing SOC events for this month
-    const tMin = `${ym}-01T00:00:00Z`;
-    const tMax = `${year}-${String(mo < 12 ? mo+1 : 1).padStart(2,'0')}-01T00:00:00Z`;
-    const existUrl = `https://www.googleapis.com/calendar/v3/calendars/primary/events?privateExtendedProperty=soc_roster%3Dtrue&timeMin=${tMin}&timeMax=${tMax}&maxResults=50`;
-    const existing = await apiFetch(existUrl);
-    for (const ev of (existing.items || [])) {
-      await apiFetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${ev.id}`, { method: 'DELETE' });
-    }
+    // Step 1: Find or create the dedicated "SOC Roster" calendar
+    document.getElementById('sync-txt').textContent = 'Finding SOC Roster calendar…';
+    const calendarId = await getOrCreateSocCalendar();
 
-    // 2. Create new events
+    // Step 2: Delete ALL events in that calendar for this month
+    // This guarantees zero duplicates — clean slate every time
+    document.getElementById('sync-txt').textContent = 'Clearing existing shifts…';
+    await deleteAllEventsInMonth(calendarId, ym);
+
+    // Step 3: Create all shift events fresh
     const workDays = Object.entries(myShifts).filter(([, c]) => !OFF_CODES.includes(c));
     let done = 0;
+
     for (const [key, code] of workDays) {
-      const d     = parseInt(key);
-      const meta  = SHIFT_META[code.startsWith('WFH') ? code : code];
-      if (!meta || meta.allDay) {
-        // All-day event for leaves
-        if (LEAVE_CODES.includes(code)) {
-          const dateStr = `${ym}-${key}`;
-          await apiFetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              summary: `${SHIFT_META[code]?.emoji || '📋'} ${SHIFT_META[code]?.label} – SOC`,
-              start: { date: dateStr }, end: { date: dateStr },
-              colorId: '11',
-              extendedProperties: { private: { soc_roster: 'true', soc_month: ym } },
-              reminders: { useDefault: false }
-            })
-          });
-        }
-        done++;
-      } else {
+      const d    = parseInt(key);
+      const meta = SHIFT_META[code] || SHIFT_META['WO'];
+
+      let eventBody;
+
+      if (LEAVE_CODES.includes(code)) {
+        // All-day event for leaves/holidays
+        eventBody = {
+          summary:    `${meta.emoji || '📋'} ${meta.label} – SOC`,
+          start:      { date: `${ym}-${key}` },
+          end:        { date: `${ym}-${key}` },
+          colorId:    '11',
+          reminders:  { useDefault: false }
+        };
+      } else if (!meta.allDay && meta.start) {
+        // Timed shift event
         const dateStr = `${ym}-${key}`;
         const startDT = `${dateStr}T${meta.start}:00+05:30`;
         let endDT;
         if (meta.nextDay) {
-          const nd = new Date(year, mo - 1, d + 1);
+          const nd    = new Date(year, mo - 1, d + 1);
           const ndStr = `${nd.getFullYear()}-${String(nd.getMonth()+1).padStart(2,'0')}-${String(nd.getDate()).padStart(2,'0')}`;
           endDT = `${ndStr}T${meta.end}:00+05:30`;
         } else {
           endDT = `${dateStr}T${meta.end}:00+05:30`;
         }
-
-        await apiFetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            summary: `${meta.emoji} ${meta.label} – SOC`,
-            start: { dateTime: startDT, timeZone: 'Asia/Kolkata' },
-            end:   { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
-            colorId: code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9',
-            extendedProperties: { private: { soc_roster: 'true', soc_month: ym } },
-            reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] }
-          })
-        });
-        done++;
+        const colorId = code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':
+                        code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
+        eventBody = {
+          summary:   `${meta.emoji} ${meta.label} – SOC`,
+          start:     { dateTime: startDT, timeZone: 'Asia/Kolkata' },
+          end:       { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
+          colorId,
+          reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] }
+        };
+      } else {
+        done++; continue;
       }
+
+      await apiFetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(eventBody) }
+      );
+      done++;
+
       const pct = Math.round(done / workDays.length * 100);
       document.getElementById('prog-f').style.width = pct + '%';
       document.getElementById('prog-l').textContent = `${done}/${workDays.length}`;
       document.getElementById('prog-r').textContent = pct + '%';
       document.getElementById('sync-txt').textContent = `Creating event ${done} of ${workDays.length}…`;
-      await new Promise(r => setTimeout(r, 60));
+      await new Promise(r => setTimeout(r, 50));
     }
+
+    // Save last sync timestamp
+    const syncTime = new Date().toISOString();
+    localStorage.setItem('soc_last_sync_' + userEmail, syncTime);
+    updateLastSyncLabel();
 
     document.getElementById('sync-progress').style.display = 'none';
     document.getElementById('sync-result').innerHTML = `
       <div class="sync-done">
         <div style="font-size:2rem;margin-bottom:8px">🎉</div>
         <h3>All Shifts Synced!</h3>
-        <p>${selectedMonth.replace('_',' ')} shifts are now in your Google Calendar.<br>
-        Open <strong>Google Calendar</strong> on your Android phone to see them.</p>
+        <p>${selectedMonth.replace('_',' ')} shifts are in your <strong>SOC Roster</strong> calendar.<br>
+        Open <strong>Google Calendar</strong> on your Android — look for the teal "SOC Roster" calendar.</p>
         <div class="sync-stats">
           <div class="stat-box"><div class="n" style="color:var(--green)">${done}</div><div class="l">Synced</div></div>
           <div class="stat-box"><div class="n" style="color:var(--text2)">${days - workDays.length}</div><div class="l">Days Off</div></div>
           <div class="stat-box"><div class="n" style="color:var(--accent)">${days}</div><div class="l">Total Days</div></div>
         </div>
-        <p style="font-size:.72rem">💡 Check Settings → Accounts on your phone to ensure sync is enabled.</p>
+        <p style="font-size:.72rem">💡 On your phone: Google Calendar → tap ≡ menu → make sure "SOC Roster" is checked.</p>
       </div>`;
     btn.textContent = '✅ Synced!';
     btn.style.background = 'linear-gradient(135deg,var(--green),#059669)';
@@ -1071,7 +1124,7 @@ async function syncCalendar() {
     document.getElementById('sync-progress').style.display = 'none';
     document.getElementById('sync-result').innerHTML = `<div class="err-box" style="display:block">❌ Sync failed: ${e.message}</div>`;
     btn.disabled = false;
-    btn.textContent = '📅 Sync to Google Calendar';
+    btn.textContent = '📅 Sync to SOC Calendar';
   }
 }
 
@@ -1156,7 +1209,7 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
       const base   = code.startsWith('WFH') ? 'WFH' : code;
       const isWk   = dow[d-1]===0||dow[d-1]===6;
       const isTd   = d===todayD;
-      const disp   = code==='WO' ? '·' : (code.length>4 ? code.replace('WFH-','W-') : code);
+      const disp   = code.length>4 ? code.replace('WFH-','W-') : code;
       const extra  = editable ? `onclick="openShiftEdit(${ri},${d},'${code}','${empName}')" title="${empName} · Day ${d}: ${code}"` : `title="${code} · ${SHIFT_META[code]?.label||''}"`;
       html += `<td class="${isWk?'wk':''} ${isTd?'td-today':''}" data-s="${base}">
         <span class="rc ${shiftClass(code)} ${editable?'editable':''}" ${extra}>${disp}</span>
@@ -1416,6 +1469,124 @@ function closeModal() {
 /* ══════════════════════════════════════════════════════
    TOAST
 ══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════
+   CALENDAR — AUTO-SYNC & DE-SYNC (Task 3)
+══════════════════════════════════════════════════════ */
+
+// ── Load auto-sync preference ──
+function loadAutoSyncPref() {
+  const pref = localStorage.getItem('soc_autosync_' + userEmail) === 'true';
+  const toggle = document.getElementById('autosync-toggle');
+  if (toggle) {
+    toggle.checked = pref;
+    updateAutoSyncLabel(pref);
+  }
+  updateLastSyncLabel();
+}
+
+function updateAutoSyncLabel(on) {
+  const lbl = document.getElementById('autosync-label');
+  if (lbl) {
+    lbl.textContent = on ? 'Auto-sync: ON' : 'Auto-sync: OFF';
+    lbl.style.color = on ? 'var(--green)' : 'var(--muted)';
+  }
+}
+
+function updateLastSyncLabel() {
+  const el = document.getElementById('last-sync-info');
+  if (!el) return;
+  const ts = localStorage.getItem('soc_last_sync_' + userEmail);
+  if (ts) {
+    const d = new Date(ts);
+    el.textContent = `Last synced: ${d.toLocaleDateString('en-IN')} at ${d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})} IST`;
+  } else {
+    el.textContent = 'Not yet synced this session';
+  }
+}
+
+function toggleAutoSync(on) {
+  localStorage.setItem('soc_autosync_' + userEmail, on ? 'true' : 'false');
+  updateAutoSyncLabel(on);
+  if (on) {
+    showToast('🔄 Auto-sync ON — calendar will update after approvals');
+    // Sync immediately when turned on
+    syncCalendar();
+  } else {
+    showToast('Auto-sync OFF');
+  }
+}
+
+// Called after admin approves a request — triggers auto-sync if enabled
+async function autoSyncIfEnabled() {
+  const pref = localStorage.getItem('soc_autosync_' + userEmail) === 'true';
+  if (pref) {
+    showToast('🔄 Auto-syncing calendar…');
+    await syncCalendar();
+  }
+}
+
+// ── De-sync modal ──
+function openDesyncModal() {
+  document.getElementById('modal-content').innerHTML = `
+    <h3>🗑️ De-sync Calendar</h3>
+    <p style="font-size:.82rem;color:var(--text2);margin-bottom:20px;line-height:1.6">
+      Remove SOC shift events from your <strong>SOC Roster</strong> calendar.
+    </p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="card-sm" style="cursor:pointer;border:1px solid var(--border);border-radius:10px;padding:14px;transition:border-color .2s"
+        onclick="doDesync('month')" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-weight:700;margin-bottom:4px">📅 This month only</div>
+        <div style="font-size:.78rem;color:var(--muted)">Remove all ${selectedMonth.replace('_',' ')} shifts from your calendar</div>
+      </div>
+      <div class="card-sm" style="cursor:pointer;border:1px solid var(--border);border-radius:10px;padding:14px;transition:border-color .2s"
+        onclick="doDesync('all')" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-weight:700;margin-bottom:4px">🗑️ All SOC shifts</div>
+        <div style="font-size:.78rem;color:var(--muted)">Delete the entire SOC Roster calendar and all its events</div>
+      </div>
+    </div>
+    <div class="modal-btns"><button class="btn btn-outline" onclick="closeModal()">Cancel</button></div>`;
+  openModal();
+}
+
+async function doDesync(scope) {
+  closeModal();
+  const btn = document.getElementById('sync-cal-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ De-syncing…'; }
+
+  try {
+    const calId = localStorage.getItem('soc_calendar_id_' + userEmail);
+    if (!calId) {
+      // Try to find the calendar
+      const list = await apiFetch('https://www.googleapis.com/calendar/v3/users/me/calendarList');
+      const cal  = (list.items || []).find(c => c.summary === SOC_CAL_NAME);
+      if (!cal) { showToast('ℹ️ No SOC Roster calendar found'); if(btn){btn.disabled=false;btn.textContent='📅 Sync to SOC Calendar';} return; }
+      localStorage.setItem('soc_calendar_id_' + userEmail, cal.id);
+    }
+
+    const resolvedCalId = localStorage.getItem('soc_calendar_id_' + userEmail);
+
+    if (scope === 'month') {
+      const ym = monthToYM(selectedMonth);
+      const deleted = await deleteAllEventsInMonth(resolvedCalId, ym);
+      localStorage.removeItem('soc_last_sync_' + userEmail);
+      updateLastSyncLabel();
+      showToast(`🗑️ Removed ${deleted} events for ${selectedMonth.replace('_',' ')}`);
+    } else {
+      // Delete the entire SOC Roster calendar
+      await apiFetch(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(resolvedCalId)}`, { method: 'DELETE' });
+      localStorage.removeItem('soc_calendar_id_' + userEmail);
+      localStorage.removeItem('soc_last_sync_' + userEmail);
+      updateLastSyncLabel();
+      showToast('🗑️ SOC Roster calendar deleted from Google Calendar');
+    }
+
+  } catch(e) {
+    showToast('❌ De-sync failed: ' + e.message);
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = '📅 Sync to SOC Calendar'; }
+}
+
 function showToast(msg) {
   let t = document.getElementById('toast');
   if (!t) {

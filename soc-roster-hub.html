@@ -438,6 +438,8 @@ let leaveLogCache = null;
 let activeFilter = 'ALL', activeTab = 'my-shifts';
 let pendingCount = 0;
 let auditLog = [];
+let autoSyncPoller  = null;  // legacy – kept for stopAutoSyncPoller cleanup
+let uiRefreshPoller = null;  // 30-second poller: refreshes UI + auto-syncs calendar
 
 /* ══════════════════════════════════════════════════════
    AUTH
@@ -521,6 +523,8 @@ function signOut() {
   token = null; userEmail = null; userName = null; isAdmin = false;
   rosterCache = {}; leaveLogCache = null;
   sessionStorage.removeItem('soc_session');
+  stopUIRefreshPoller();
+  stopAutoSyncPoller();
   document.getElementById('main-app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
@@ -644,6 +648,11 @@ async function initApp() {
   // Load first tab
   await loadMyShifts();
   if (isAdmin) checkPendingRequests();
+
+  // ── Start the unified 30-second poller (always on while logged in) ─────────
+  // Handles both: (1) auto-refresh UI when admin makes a change,
+  // (2) auto-sync calendar when auto-sync pref is ON.
+  startUIRefreshPoller();
 }
 
 /* ══════════════════════════════════════════════════════
@@ -929,8 +938,7 @@ async function submitLeaveRequest(dayKey, currentCode, empName, dateStr) {
     showToast('✅ Request submitted — pending admin approval');
     leaveLogCache = null;
     if (isAdmin) checkPendingRequests();
-    // Auto-sync calendar if enabled (reflects WO/leave visually)
-    autoSyncIfEnabled();
+    // Note: auto-sync is handled by the poller after admin approves the request
   } catch(e) {
     alert('Failed to submit request: ' + e.message);
   }
@@ -1015,118 +1023,127 @@ async function deleteAllEventsInMonth(calendarId, ym) {
   return deleted;
 }
 
-async function syncCalendar() {
-  const btn = document.getElementById('sync-cal-btn');
-  if (!btn) return;
-  btn.disabled = true;
-  btn.textContent = '⏳ Syncing…';
+/* ── syncCalendarHeadless — zero DOM dependencies ────────────────────────────
+   Core sync logic extracted so it can be called from the background poller
+   without depending on the My Shifts tab being active in the DOM.
+   onProgress(done, total, msg) is optional — called after each event created.
+──────────────────────────────────────────────────────────────────────────── */
+async function syncCalendarHeadless(onProgress) {
+  const rows   = await getRoster(selectedMonth);
+  const myIdx  = findMyRow(rows);
+  if (myIdx === -1) throw new Error('Your row not found in roster');
 
-  document.getElementById('sync-progress').style.display = 'block';
-  document.getElementById('sync-result').innerHTML = '';
+  const myShifts   = parseRosterRow(rows[myIdx]);
+  const ym         = monthToYM(selectedMonth);
+  const [year, mo] = ym.split('-').map(Number);
+  const days       = getDaysInMonth(selectedMonth);
 
-  try {
-    const rows   = await getRoster(selectedMonth);
-    const myIdx  = findMyRow(rows);
-    if (myIdx === -1) throw new Error('Your row not found in roster');
+  const calendarId = await getOrCreateSocCalendar();
+  await deleteAllEventsInMonth(calendarId, ym);
 
-    const myShifts = parseRosterRow(rows[myIdx]);
-    const ym       = monthToYM(selectedMonth);
-    const [year, mo] = ym.split('-').map(Number);
-    const days     = getDaysInMonth(selectedMonth);
+  const workDays = Object.entries(myShifts).filter(([, c]) => !OFF_CODES.includes(c));
+  let done = 0;
 
-    // Step 1: Find or create the dedicated "SOC Roster" calendar
-    document.getElementById('sync-txt').textContent = 'Finding SOC Roster calendar…';
-    const calendarId = await getOrCreateSocCalendar();
+  for (const [key, code] of workDays) {
+    const d    = parseInt(key);
+    const meta = SHIFT_META[code] || SHIFT_META['WO'];
+    let eventBody;
 
-    // Step 2: Delete ALL events in that calendar for this month
-    // This guarantees zero duplicates — clean slate every time
-    document.getElementById('sync-txt').textContent = 'Clearing existing shifts…';
-    await deleteAllEventsInMonth(calendarId, ym);
-
-    // Step 3: Create all shift events fresh
-    const workDays = Object.entries(myShifts).filter(([, c]) => !OFF_CODES.includes(c));
-    let done = 0;
-
-    for (const [key, code] of workDays) {
-      const d    = parseInt(key);
-      const meta = SHIFT_META[code] || SHIFT_META['WO'];
-
-      let eventBody;
-
-      if (LEAVE_CODES.includes(code)) {
-        // All-day event for leaves/holidays
-        eventBody = {
-          summary:    `${meta.emoji || '📋'} ${meta.label} – SOC`,
-          start:      { date: `${ym}-${key}` },
-          end:        { date: `${ym}-${key}` },
-          colorId:    '11',
-          reminders:  { useDefault: false }
-        };
-      } else if (!meta.allDay && meta.start) {
-        // Timed shift event
-        const dateStr = `${ym}-${key}`;
-        const startDT = `${dateStr}T${meta.start}:00+05:30`;
-        let endDT;
-        if (meta.nextDay) {
-          const nd    = new Date(year, mo - 1, d + 1);
-          const ndStr = `${nd.getFullYear()}-${String(nd.getMonth()+1).padStart(2,'0')}-${String(nd.getDate()).padStart(2,'0')}`;
-          endDT = `${ndStr}T${meta.end}:00+05:30`;
-        } else {
-          endDT = `${dateStr}T${meta.end}:00+05:30`;
-        }
-        const colorId = code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':
-                        code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
-        eventBody = {
-          summary:   `${meta.emoji} ${meta.label} – SOC`,
-          start:     { dateTime: startDT, timeZone: 'Asia/Kolkata' },
-          end:       { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
-          colorId,
-          reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] }
-        };
+    if (LEAVE_CODES.includes(code)) {
+      eventBody = {
+        summary:   `${meta.emoji || '📋'} ${meta.label} – SOC`,
+        start:     { date: `${ym}-${key}` },
+        end:       { date: `${ym}-${key}` },
+        colorId:   '11',
+        reminders: { useDefault: false }
+      };
+    } else if (!meta.allDay && meta.start) {
+      const dateStr = `${ym}-${key}`;
+      const startDT = `${dateStr}T${meta.start}:00+05:30`;
+      let endDT;
+      if (meta.nextDay) {
+        const nd    = new Date(year, mo - 1, d + 1);
+        const ndStr = `${nd.getFullYear()}-${String(nd.getMonth()+1).padStart(2,'0')}-${String(nd.getDate()).padStart(2,'0')}`;
+        endDT = `${ndStr}T${meta.end}:00+05:30`;
       } else {
-        done++; continue;
+        endDT = `${dateStr}T${meta.end}:00+05:30`;
       }
-
-      await apiFetch(
-        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
-        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(eventBody) }
-      );
-      done++;
-
-      const pct = Math.round(done / workDays.length * 100);
-      document.getElementById('prog-f').style.width = pct + '%';
-      document.getElementById('prog-l').textContent = `${done}/${workDays.length}`;
-      document.getElementById('prog-r').textContent = pct + '%';
-      document.getElementById('sync-txt').textContent = `Creating event ${done} of ${workDays.length}…`;
-      await new Promise(r => setTimeout(r, 50));
+      const colorId = code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':
+                      code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
+      eventBody = {
+        summary:   `${meta.emoji} ${meta.label} – SOC`,
+        start:     { dateTime: startDT, timeZone: 'Asia/Kolkata' },
+        end:       { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
+        colorId,
+        reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] }
+      };
+    } else {
+      done++; continue;
     }
 
-    // Save last sync timestamp
-    const syncTime = new Date().toISOString();
-    localStorage.setItem('soc_last_sync_' + userEmail, syncTime);
-    updateLastSyncLabel();
+    await apiFetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(eventBody) }
+    );
+    done++;
+    if (onProgress) onProgress(done, workDays.length, `Creating event ${done} of ${workDays.length}…`);
+    await new Promise(r => setTimeout(r, 50));
+  }
 
-    document.getElementById('sync-progress').style.display = 'none';
-    document.getElementById('sync-result').innerHTML = `
+  // Stamp the sync time so the poller won't re-fire until admin makes another change
+  const syncTime = new Date().toISOString();
+  localStorage.setItem('soc_last_sync_' + userEmail, syncTime);
+  return { synced: done, total: workDays.length, totalDays: days };
+}
+
+/* ── syncCalendar — UI-facing wrapper around syncCalendarHeadless ─────────── */
+async function syncCalendar() {
+  const btn        = document.getElementById('sync-cal-btn');
+  const progressEl = document.getElementById('sync-progress');
+  const resultEl   = document.getElementById('sync-result');
+  const txtEl      = document.getElementById('sync-txt');
+
+  if (btn)        { btn.disabled = true; btn.textContent = '⏳ Syncing…'; }
+  if (progressEl) progressEl.style.display = 'block';
+  if (resultEl)   resultEl.innerHTML = '';
+  if (txtEl)      txtEl.textContent = 'Finding SOC Roster calendar…';
+
+  try {
+    const days  = getDaysInMonth(selectedMonth);
+    const stats = await syncCalendarHeadless((done, total, msg) => {
+      const pct = Math.round(done / total * 100);
+      const pf  = document.getElementById('prog-f');
+      const pl  = document.getElementById('prog-l');
+      const pr  = document.getElementById('prog-r');
+      const st  = document.getElementById('sync-txt');
+      if (pf) pf.style.width = pct + '%';
+      if (pl) pl.textContent = `${done}/${total}`;
+      if (pr) pr.textContent = pct + '%';
+      if (st) st.textContent = msg;
+    });
+
+    updateLastSyncLabel();
+    if (progressEl) progressEl.style.display = 'none';
+    if (resultEl) resultEl.innerHTML = `
       <div class="sync-done">
         <div style="font-size:2rem;margin-bottom:8px">🎉</div>
         <h3>All Shifts Synced!</h3>
         <p>${selectedMonth.replace('_',' ')} shifts are now in your <strong>SOC Roster</strong> calendar.</p>
         <div class="sync-stats">
-          <div class="stat-box"><div class="n" style="color:var(--green)">${done}</div><div class="l">Synced</div></div>
-          <div class="stat-box"><div class="n" style="color:var(--text2)">${days - workDays.length}</div><div class="l">Days Off</div></div>
+          <div class="stat-box"><div class="n" style="color:var(--green)">${stats.synced}</div><div class="l">Synced</div></div>
+          <div class="stat-box"><div class="n" style="color:var(--text2)">${days - stats.total}</div><div class="l">Days Off</div></div>
           <div class="stat-box"><div class="n" style="color:var(--accent)">${days}</div><div class="l">Total Days</div></div>
         </div>
       </div>`;
-    btn.textContent = '✅ Synced!';
-    btn.style.background = 'linear-gradient(135deg,var(--green),#059669)';
-    btn.style.color = 'white';
-
+    if (btn) {
+      btn.textContent = '✅ Synced!';
+      btn.style.background = 'linear-gradient(135deg,var(--green),#059669)';
+      btn.style.color = 'white';
+    }
   } catch(e) {
-    document.getElementById('sync-progress').style.display = 'none';
-    document.getElementById('sync-result').innerHTML = `<div class="err-box" style="display:block">❌ Sync failed: ${e.message}</div>`;
-    btn.disabled = false;
-    btn.textContent = '📅 Sync to SOC Calendar';
+    if (progressEl) progressEl.style.display = 'none';
+    if (resultEl)   resultEl.innerHTML = `<div class="err-box" style="display:block">❌ Sync failed: ${e.message}</div>`;
+    if (btn) { btn.disabled = false; btn.textContent = '📅 Sync to SOC Calendar'; }
   }
 }
 
@@ -1416,10 +1433,8 @@ async function saveShiftEdit(empRowIdx, day, oldCode, empName) {
       adminEmail:   userEmail
     });
 
-    // Update local cache
-    if (rosterCache[selectedMonth] && rosterCache[selectedMonth][empRowIdx]) {
-      rosterCache[selectedMonth][empRowIdx][day + 1] = newCode;
-    }
+    // Invalidate full cache so fresh data loads for everyone
+    rosterCache   = {};
     leaveLogCache = null;
 
     closeModal();
@@ -1469,7 +1484,11 @@ function closeModal() {
    CALENDAR — AUTO-SYNC & DE-SYNC (Task 3)
 ══════════════════════════════════════════════════════ */
 
-// ── Load auto-sync preference ──
+/* ══════════════════════════════════════════════════════
+   CALENDAR — AUTO-SYNC & DE-SYNC
+══════════════════════════════════════════════════════ */
+
+// ── Load auto-sync preference (called once My Shifts tab renders) ──
 function loadAutoSyncPref() {
   const pref = localStorage.getItem('soc_autosync_' + userEmail) === 'true';
   const toggle = document.getElementById('autosync-toggle');
@@ -1478,6 +1497,7 @@ function loadAutoSyncPref() {
     updateAutoSyncLabel(pref);
   }
   updateLastSyncLabel();
+  // Note: the unified UI refresh poller is started by initApp() — no separate start needed here.
 }
 
 function updateAutoSyncLabel(on) {
@@ -1492,7 +1512,7 @@ function updateLastSyncLabel() {
   const el = document.getElementById('last-sync-info');
   if (!el) return;
   const ts = localStorage.getItem('soc_last_sync_' + userEmail);
-  if (ts) {
+  if (ts && ts !== '1970-01-01T00:00:00.000Z') {
     const d = new Date(ts);
     el.textContent = `Last synced: ${d.toLocaleDateString('en-IN')} at ${d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})} IST`;
   } else {
@@ -1504,21 +1524,111 @@ function toggleAutoSync(on) {
   localStorage.setItem('soc_autosync_' + userEmail, on ? 'true' : 'false');
   updateAutoSyncLabel(on);
   if (on) {
-    showToast('🔄 Auto-sync ON — calendar will update after approvals');
-    // Sync immediately when turned on
-    syncCalendar();
+    showToast('🔄 Auto-sync ON — syncing calendar now…');
+    // FIX (Bug 5 — race condition): Reset soc_last_sync_ to epoch so the
+    // poller comparison will always detect the latest server flag as "newer",
+    // guaranteeing a sync on the very next poller tick AND immediately now.
+    localStorage.setItem('soc_last_sync_' + userEmail, '1970-01-01T00:00:00.000Z');
+    syncCalendar(); // immediate sync with UI progress bar
+    // The unified poller (already running since login) will handle future syncs.
   } else {
     showToast('Auto-sync OFF');
   }
 }
 
-// Called after admin approves a request — triggers auto-sync if enabled
-async function autoSyncIfEnabled() {
-  const pref = localStorage.getItem('soc_autosync_' + userEmail) === 'true';
-  if (pref) {
-    showToast('🔄 Auto-syncing calendar…');
-    await syncCalendar();
+/* ══════════════════════════════════════════════════════
+   UNIFIED UI REFRESH + AUTO-SYNC POLLER  (30s)
+   ─────────────────────────────────────────────────────
+   Replaces the old autoSyncPoller architecture.
+
+   Runs every 30 seconds from the moment the user logs in.
+   Does TWO independent jobs using TWO separate localStorage keys:
+
+   Job 1 — UI refresh (always, regardless of auto-sync toggle):
+     Key: soc_last_ui_refresh_<email>
+     If serverTs > uiLocalTs → clear caches → reload active tab
+     → stamps soc_last_ui_refresh_ with serverTs
+
+   Job 2 — Calendar auto-sync (only when auto-sync pref = ON):
+     Key: soc_last_sync_<email>
+     If serverTs > syncLocalTs → run syncCalendarHeadless() silently
+     → stamps soc_last_sync_ with serverTs
+
+   Why two separate keys?
+     syncCalendar() stamps soc_last_sync_ with "now" (wall-clock time),
+     which could be NEWER than a server flag written 5 minutes ago.
+     soc_last_ui_refresh_ is always stamped with the server's flag timestamp,
+     so there's no race condition between the two comparisons.
+══════════════════════════════════════════════════════ */
+function startUIRefreshPoller() {
+  stopUIRefreshPoller();
+  uiRefreshPoller = setInterval(checkAndRefreshUI, 30000); // 30 seconds
+  console.log('[UIPoller] Started (30s interval)');
+}
+
+function stopUIRefreshPoller() {
+  if (uiRefreshPoller) {
+    clearInterval(uiRefreshPoller);
+    uiRefreshPoller = null;
+    console.log('[UIPoller] Stopped');
   }
+}
+
+async function checkAndRefreshUI() {
+  // FIX (Bug 4 — token expiry): If token is gone, stop the poller and notify.
+  if (!token || !userEmail) {
+    stopUIRefreshPoller();
+    showToast('⚠️ Session expired — please sign in again');
+    return;
+  }
+
+  try {
+    const result = await callAppsScript({ action: 'getSyncFlag' });
+    if (!result || !result.ts) return; // No flag in Sync_Flags yet — skip silently.
+
+    const serverTs    = new Date(result.ts).getTime();
+    const uiLocalTs   = new Date(localStorage.getItem('soc_last_ui_refresh_' + userEmail) || 0).getTime();
+    const syncLocalTs = new Date(localStorage.getItem('soc_last_sync_' + userEmail) || 0).getTime();
+
+    // ── Job 1: Refresh the roster UI grid ───────────────────────────────────
+    if (serverTs > uiLocalTs) {
+      console.log('[UIPoller] Server change detected — refreshing UI…');
+      rosterCache   = {};
+      leaveLogCache = null;
+      // FIX (Task 1): Reload whichever tab is currently active.
+      if      (activeTab === 'my-shifts')   await loadMyShifts();
+      else if (activeTab === 'team-roster') await loadTeamRoster();
+      else if (activeTab === 'admin-panel') await loadAdminPanel();
+      localStorage.setItem('soc_last_ui_refresh_' + userEmail, result.ts);
+      showToast('🔄 Roster updated — shifts refreshed automatically');
+    }
+
+    // ── Job 2: Calendar auto-sync ────────────────────────────────────────────
+    const pref = localStorage.getItem('soc_autosync_' + userEmail) === 'true';
+    if (pref && serverTs > syncLocalTs) {
+      console.log('[UIPoller] Auto-syncing calendar (headless)…');
+      // FIX (Bug 2+3): Call syncCalendarHeadless() — no DOM dependency.
+      // syncCalendar() would crash if My Shifts tab isn't active.
+      try {
+        await syncCalendarHeadless();
+        localStorage.setItem('soc_last_sync_' + userEmail, result.ts);
+        updateLastSyncLabel();
+        showToast('✅ Calendar auto-synced with updated roster!');
+      } catch(calErr) {
+        console.warn('[UIPoller] Calendar sync error:', calErr.message);
+        showToast('⚠️ Auto-sync: calendar update failed — ' + calErr.message);
+      }
+    }
+  } catch(e) {
+    // Silent fail — poller errors must never disrupt the user's workflow.
+    console.warn('[UIPoller] Poll error:', e.message);
+  }
+}
+
+// ── Legacy stubs — kept so nothing breaks if referenced elsewhere ─────────────
+function startAutoSyncPoller() { /* replaced by startUIRefreshPoller — no-op */ }
+function stopAutoSyncPoller() {
+  if (autoSyncPoller) { clearInterval(autoSyncPoller); autoSyncPoller = null; }
 }
 
 // ── De-sync modal ──

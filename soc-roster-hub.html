@@ -537,6 +537,10 @@ async function apiFetch(url, opts = {}) {
     const err = await resp.json().catch(() => ({}));
     throw new Error(err.error?.message || `HTTP ${resp.status}`);
   }
+  // 204 No Content or empty body (e.g. Google Calendar DELETE) — nothing to parse
+  if (resp.status === 204 || resp.headers.get('content-length') === '0') return null;
+  const ct = resp.headers.get('content-type') || '';
+  if (!ct.includes('application/json')) return null;
   return resp.json();
 }
 

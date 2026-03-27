@@ -246,6 +246,17 @@ table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
 .wk{background:rgba(0,0,0,.1);}
 .td-today{background:rgba(0,212,255,.06)!important;}
 
+/* ─── Spotlight Mode ─── */
+.tr-dimmed { opacity: 0.2; }
+.tr-spotlight { 
+  outline: 2px solid var(--accent); 
+  outline-offset: -1px;
+  opacity: 1 !important;
+  background: rgba(0,212,255,.08) !important;
+}
+.td-name-clickable { cursor: pointer; }
+.td-name-clickable:hover { color: var(--accent); }
+
 /* ─── Roster Chips ─── */
 .rc{display:inline-flex;align-items:center;justify-content:center;width:30px;height:24px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;}
 .rc-dim{opacity:.25;}
@@ -514,6 +525,7 @@ let pendingCount = 0;
 let auditLog = [];
 let autoSyncPoller  = null;  // legacy – kept for stopAutoSyncPoller cleanup
 let uiRefreshPoller = null;  // 30-second poller: refreshes UI + auto-syncs calendar
+let highlightedEmployee = null;
 
 /* ══════════════════════════════════════════════════════
    AUTH
@@ -1295,7 +1307,9 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
     const empName = row[1]?.trim() || '';
     const isMe    = empName.toLowerCase() === userName?.toLowerCase();
     html += `<tr class="${isMe?'me':''}" data-n="${empName.toLowerCase()}">
-      <td class="td-name"><span class="emp-dot" style="background:${isMe?'var(--accent)':'var(--muted)'}"></span>${empName}</td>`;
+      <td class="td-name td-name-clickable" onclick="spotlightEmployee('${empName.replace(/'/g, "\\'")}')" title="Click to highlight ${empName}'s shifts">
+        <span class="emp-dot" style="background:${isMe?'var(--accent)':'var(--muted)'}"></span>${empName}
+      </td>`;
 
     for (let d=1;d<=days;d++) {
       const code   = (row[d+1]||'WO').trim().toUpperCase() || 'WO';
@@ -1311,7 +1325,33 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
     html += `</tr>`;
   });
 
-  html += `</tbody></table></div>`;
+  html += `</tbody><tfoot>`;
+
+  const countRows = [
+    { label:'Total Morning Shift', code:'MS',  color:'#DEEAF1' },
+    { label:'Total General Shift', code:'GS',  color:'#E2EFDA' },
+    { label:'Total Afternoon Shift',code:'AS', color:'#FCE4D6' },
+    { label:'Total Night Shift',   code:'NS',  color:'#EAD1DC' },
+  ];
+
+  countRows.forEach(({ label, code, color }) => {
+    html += `<tr style="border-top:2px solid var(--border)">
+      <td class="td-name" style="background:${color};color:#000;font-size:.72rem;font-weight:700">
+        ${label}
+      </td>`;
+    for (let d = 1; d <= days; d++) {
+      const count = rows.filter(row => {
+        const c = (row[d+1]||'WO').trim().toUpperCase();
+        return code === 'WFH' ? c.startsWith('WFH') : c === code;
+      }).length;
+      html += `<td style="background:${color};text-align:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:#000">
+        ${count || ''}
+      </td>`;
+    }
+    html += `</tr>`;
+  });
+
+  html += `</tfoot></table></div>`;
 
   el.innerHTML = html;
   activeFilter = 'ALL';
@@ -1338,6 +1378,29 @@ function filterTeam() {
       });
     } else {
       tr.querySelectorAll('.rc').forEach(rc => rc.classList.remove('rc-dim'));
+    }
+  });
+}
+
+function spotlightEmployee(name) {
+  if (highlightedEmployee === name) {
+    highlightedEmployee = null;
+    document.querySelectorAll('#team-tt tbody tr').forEach(tr => {
+      tr.classList.remove('tr-dimmed', 'tr-spotlight');
+    });
+    // restore filter
+    filterTeam();
+    return;
+  }
+  highlightedEmployee = name;
+  document.querySelectorAll('#team-tt tbody tr').forEach(tr => {
+    if (!tr.classList.contains('r-dates') && !tr.classList.contains('r-dow') && !tr.closest('tfoot')) {
+      const isTarget = tr.dataset.n === name.toLowerCase();
+      tr.classList.toggle('tr-dimmed', !isTarget);
+      tr.classList.toggle('tr-spotlight', isTarget);
+      if (isTarget) {
+        tr.classList.remove('hidden'); // Ensure spotlight takes priority over filter
+      }
     }
   });
 }

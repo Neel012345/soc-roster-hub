@@ -27,29 +27,102 @@
   --radius:  10px;
 }
 body.light {
-  --bg:      #f0f4f8;
-  --s1:      #ffffff;
-  --s2:      #f1f5f9;
-  --s3:      #e2e8f0;
-  --border:  #cbd5e1;
-  --border2: #94a3b8;
-  --accent:  #0099cc;
-  --a2:      #0077aa;
-  --green:   #059669;
-  --yellow:  #d97706;
-  --red:     #dc2626;
-  --orange:  #ea580c;
-  --purple:  #7c3aed;
+  --bg:      #dbeafe;
+  --s1:      #eff6ff;
+  --s2:      #dbeafe;
+  --s3:      #bfdbfe;
+  --border:  #93c5fd;
+  --border2: #60a5fa;
+  --accent:  #1d6fc4;
+  --a2:      #1557a0;
+  --green:   #047857;
+  --yellow:  #b45309;
+  --red:     #b91c1c;
+  --orange:  #c2410c;
+  --purple:  #6d28d9;
   --text:    #0f172a;
-  --text2:   #475569;
-  --muted:   #94a3b8;
-  --card:    #ffffff;
+  --text2:   #1e3a5f;
+  --muted:   #3b6ea5;
+  --card:    #eff6ff;
+  --radius:  10px;
 }
-body.light::before { background:none; }
-body.light .app-header { background:rgba(240,244,248,.95); }
-body.light .tab-nav { background:#f8fafc; }
-body.light table.tt tbody tr:hover { background:rgba(0,153,204,.05); }
-body.light .rc-WO { background:rgba(148,163,184,.25); }
+body.light::before { background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(29,111,196,.09), transparent); }
+body.light .app-header { background:rgba(219,234,254,.97); border-bottom:1px solid #93c5fd; }
+body.light .tab-nav { background:#dbeafe; border-bottom:1px solid #93c5fd; }
+body.light .tab-btn { color:#3b6ea5; }
+body.light .tab-btn.active { color:#1d6fc4; border-bottom-color:#1d6fc4; }
+body.light .tab-btn:hover { color:#0f172a; }
+body.light .month-sel { background:#eff6ff; border-color:#93c5fd; color:#0f172a; }
+body.light .btn-sm { border-color:#93c5fd; color:#1e3a5f; }
+body.light .btn-sm:hover { border-color:#1d6fc4; color:#1d6fc4; }
+
+/* ── Light mode: vivid shift chip colors ── */
+body.light .sh-MS  { background:#bfdbfe; color:#1e3a8a; font-weight:800; }
+body.light .sh-GS  { background:#bbf7d0; color:#064e3b; font-weight:800; }
+body.light .sh-AS  { background:#fed7aa; color:#7c2d12; font-weight:800; }
+body.light .sh-NS  { background:#ddd6fe; color:#3b0764; font-weight:800; }
+body.light .sh-WFH { background:#a5f3fc; color:#164e63; font-weight:800; }
+body.light .sh-WO  { background:#cbd5e1; color:#334155; font-weight:700; }
+body.light .sh-VL  { background:#fecaca; color:#7f1d1d; font-weight:800; }
+body.light .sh-CL  { background:#fecaca; color:#7f1d1d; font-weight:800; }
+body.light .sh-CO  { background:#fef08a; color:#713f12; font-weight:800; }
+body.light .sh-GH  { background:#a7f3d0; color:#064e3b; font-weight:800; }
+
+/* ── Light mode: vivid shift cell backgrounds (My Shifts grid) ── */
+body.light .bg-MS  { background:#bfdbfe; border-color:#93c5fd; }
+body.light .bg-GS  { background:#bbf7d0; border-color:#6ee7b7; }
+body.light .bg-AS  { background:#fed7aa; border-color:#fdba74; }
+body.light .bg-NS  { background:#ddd6fe; border-color:#c4b5fd; }
+body.light .bg-WFH { background:#a5f3fc; border-color:#67e8f9; }
+body.light .bg-WO  { background:#e2e8f0; border-color:#cbd5e1; }
+body.light .bg-VL,
+body.light .bg-CL  { background:#fecaca; border-color:#fca5a5; }
+body.light .bg-CO  { background:#fef08a; border-color:#fde047; }
+body.light .bg-GH  { background:#a7f3d0; border-color:#6ee7b7; }
+/* text inside shift cells */
+body.light .bg-MS .code  { color:#1e3a8a; }
+body.light .bg-GS .code  { color:#064e3b; }
+body.light .bg-AS .code  { color:#7c2d12; }
+body.light .bg-NS .code  { color:#3b0764; }
+body.light .bg-WFH .code { color:#164e63; }
+body.light .bg-WO .code  { color:#334155; }
+body.light .bg-VL .code,
+body.light .bg-CL .code  { color:#7f1d1d; }
+body.light .bg-CO .code  { color:#713f12; }
+body.light .bg-GH .code  { color:#064e3b; }
+body.light .sc .dn { color:rgba(15,23,42,.45); }
+body.light .sc.today-cell .dn { color:#1d6fc4; }
+
+/* ── Light mode: table ── */
+body.light table.tt tbody tr { border-bottom-color:rgba(147,197,253,.5); }
+body.light table.tt tbody tr:hover { background:rgba(29,111,196,.07); }
+body.light table.tt tbody tr.me  { background:rgba(29,111,196,.12); }
+/* FIX Issue 2: sticky name cell — keep it light on hover, never go dark */
+body.light table.tt td.td-name               { background:#eff6ff; color:#0f172a; }
+body.light table.tt tbody tr:hover td.td-name { background:#dbeafe; color:#0f172a; }
+body.light table.tt tbody tr.me td.td-name   { background:#bfdbfe; color:#0f172a; }
+body.light table.tt thead tr.r-dates th      { background:#dbeafe; color:#1e3a5f; }
+body.light table.tt thead tr.r-dates th.th-name { background:#dbeafe; }
+body.light table.tt thead tr.r-dow th        { background:#eff6ff; color:#3b6ea5; }
+body.light table.tt thead tr.r-dow th.th-name { background:#eff6ff; }
+body.light .wk { background:rgba(147,197,253,.18); }
+body.light .td-today { background:rgba(29,111,196,.1) !important; }
+body.light .rc-WO { background:#cbd5e1; color:#334155; opacity:1; }
+
+/* ── Light mode: stat boxes, cards ── */
+body.light .stat-box { background:#eff6ff; border-color:#93c5fd; }
+body.light .card     { background:#eff6ff; border-color:#93c5fd; }
+body.light .card-sm  { background:#dbeafe; border-color:#93c5fd; }
+body.light .req-card { background:#dbeafe; border-color:#93c5fd; }
+body.light .ttable-wrap { border-color:#93c5fd; }
+body.light .search-wrap input { background:#eff6ff; border-color:#93c5fd; color:#0f172a; }
+body.light .fbtn { border-color:#93c5fd; color:#3b6ea5; }
+body.light .fbtn:hover { border-color:#1d6fc4; color:#1d6fc4; }
+body.light .fbtn.on { background:rgba(29,111,196,.15); border-color:#1d6fc4; color:#1d6fc4; }
+
+/* ── Light mode: scrollbar ── */
+body.light ::-webkit-scrollbar-track { background:#dbeafe; }
+body.light ::-webkit-scrollbar-thumb { background:#93c5fd; }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,212,255,.07),transparent);pointer-events:none;z-index:0;}
@@ -168,6 +241,7 @@ table.tt td{padding:3px 2px;text-align:center;vertical-align:middle;}
 table.tt td.td-name{text-align:left;padding:6px 10px 6px 14px;font-size:.78rem;font-weight:600;white-space:nowrap;position:sticky;left:0;background:var(--card);z-index:5;border-right:1px solid var(--border);}
 table.tt tbody tr:hover td.td-name{background:rgba(12,17,29,.95);}
 table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
+/* light mode overrides for these are in body.light block above */
 .emp-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle;flex-shrink:0;}
 .wk{background:rgba(0,0,0,.1);}
 .td-today{background:rgba(0,212,255,.06)!important;}
@@ -440,7 +514,6 @@ let pendingCount = 0;
 let auditLog = [];
 let autoSyncPoller  = null;  // legacy – kept for stopAutoSyncPoller cleanup
 let uiRefreshPoller = null;  // 30-second poller: refreshes UI + auto-syncs calendar
-let isSyncing       = false; // mutex — prevents concurrent calendar syncs → no duplicates
 
 /* ══════════════════════════════════════════════════════
    AUTH
@@ -1025,112 +1098,76 @@ async function deleteAllEventsInMonth(calendarId, ym) {
 }
 
 /* ── syncCalendarHeadless — zero DOM dependencies ────────────────────────────
-   Core sync logic. Called by both the manual Sync button and the background
-   poller. Protected by the `isSyncing` mutex so only ONE instance can run at
-   a time — this is the root fix for duplicate events.
-
-   HOW DUPLICATES WERE CREATED (and why this fixes it):
-     The poller runs every 30s. syncCalendarHeadless takes ~30s to complete.
-     The old code only stamped soc_last_sync_ at the very END of the function.
-     So if the poller fired while a sync was already in progress, it saw
-     soc_last_sync_ still at epoch (or an old value) and launched a second
-     concurrent sync. Both instances deleted + recreated events simultaneously.
-
-   This fix does TWO things:
-     1. isSyncing mutex — if a sync is already running, any new call returns
-        immediately (null) without touching the calendar at all.
-     2. Pre-stamp soc_last_sync_ at the START of the sync with the current
-        time, so ANY poller tick that fires while the sync is in progress sees
-        a "recent" soc_last_sync_ and skips the calendar step.
-
+   Core sync logic extracted so it can be called from the background poller
+   without depending on the My Shifts tab being active in the DOM.
    onProgress(done, total, msg) is optional — called after each event created.
 ──────────────────────────────────────────────────────────────────────────── */
 async function syncCalendarHeadless(onProgress) {
-  // ── MUTEX: only one sync can run at a time ──────────────────────────────
-  if (isSyncing) {
-    console.log('[Sync] Already syncing — skipping concurrent call to prevent duplicates');
-    return null;
-  }
-  isSyncing = true;
+  const rows   = await getRoster(selectedMonth);
+  const myIdx  = findMyRow(rows);
+  if (myIdx === -1) throw new Error('Your row not found in roster');
 
-  // ── PRE-STAMP: immediately mark sync as "in progress" so the poller ─────
-  // won't launch a second sync while this one is running (even if it takes >30s)
-  localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
+  const myShifts   = parseRosterRow(rows[myIdx]);
+  const ym         = monthToYM(selectedMonth);
+  const [year, mo] = ym.split('-').map(Number);
+  const days       = getDaysInMonth(selectedMonth);
 
-  try {
-    const rows   = await getRoster(selectedMonth);
-    const myIdx  = findMyRow(rows);
-    if (myIdx === -1) throw new Error('Your row not found in roster');
+  const calendarId = await getOrCreateSocCalendar();
+  await deleteAllEventsInMonth(calendarId, ym);
 
-    const myShifts   = parseRosterRow(rows[myIdx]);
-    const ym         = monthToYM(selectedMonth);
-    const [year, mo] = ym.split('-').map(Number);
-    const days       = getDaysInMonth(selectedMonth);
+  const workDays = Object.entries(myShifts).filter(([, c]) => !OFF_CODES.includes(c));
+  let done = 0;
 
-    const calendarId = await getOrCreateSocCalendar();
+  for (const [key, code] of workDays) {
+    const d    = parseInt(key);
+    const meta = SHIFT_META[code] || SHIFT_META['WO'];
+    let eventBody;
 
-    // Delete ALL existing SOC events for this month before creating new ones.
-    // This is the "clean slate" approach — guarantees zero duplicates from
-    // previous syncs even if the calendar already has events.
-    await deleteAllEventsInMonth(calendarId, ym);
-
-    const workDays = Object.entries(myShifts).filter(([, c]) => !OFF_CODES.includes(c));
-    let done = 0;
-
-    for (const [key, code] of workDays) {
-      const d    = parseInt(key);
-      const meta = SHIFT_META[code] || SHIFT_META['WO'];
-      let eventBody;
-
-      if (LEAVE_CODES.includes(code)) {
-        eventBody = {
-          summary:   `${meta.emoji || '📋'} ${meta.label} – SOC`,
-          start:     { date: `${ym}-${key}` },
-          end:       { date: `${ym}-${key}` },
-          colorId:   '11',
-          reminders: { useDefault: false }
-        };
-      } else if (!meta.allDay && meta.start) {
-        const dateStr = `${ym}-${key}`;
-        const startDT = `${dateStr}T${meta.start}:00+05:30`;
-        let endDT;
-        if (meta.nextDay) {
-          const nd    = new Date(year, mo - 1, d + 1);
-          const ndStr = `${nd.getFullYear()}-${String(nd.getMonth()+1).padStart(2,'0')}-${String(nd.getDate()).padStart(2,'0')}`;
-          endDT = `${ndStr}T${meta.end}:00+05:30`;
-        } else {
-          endDT = `${dateStr}T${meta.end}:00+05:30`;
-        }
-        const colorId = code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':
-                        code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
-        eventBody = {
-          summary:   `${meta.emoji} ${meta.label} – SOC`,
-          start:     { dateTime: startDT, timeZone: 'Asia/Kolkata' },
-          end:       { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
-          colorId,
-          reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] }
-        };
+    if (LEAVE_CODES.includes(code)) {
+      eventBody = {
+        summary:   `${meta.emoji || '📋'} ${meta.label} – SOC`,
+        start:     { date: `${ym}-${key}` },
+        end:       { date: `${ym}-${key}` },
+        colorId:   '11',
+        reminders: { useDefault: false }
+      };
+    } else if (!meta.allDay && meta.start) {
+      const dateStr = `${ym}-${key}`;
+      const startDT = `${dateStr}T${meta.start}:00+05:30`;
+      let endDT;
+      if (meta.nextDay) {
+        const nd    = new Date(year, mo - 1, d + 1);
+        const ndStr = `${nd.getFullYear()}-${String(nd.getMonth()+1).padStart(2,'0')}-${String(nd.getDate()).padStart(2,'0')}`;
+        endDT = `${ndStr}T${meta.end}:00+05:30`;
       } else {
-        done++; continue;
+        endDT = `${dateStr}T${meta.end}:00+05:30`;
       }
-
-      await apiFetch(
-        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
-        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(eventBody) }
-      );
-      done++;
-      if (onProgress) onProgress(done, workDays.length, `Creating event ${done} of ${workDays.length}…`);
-      await new Promise(r => setTimeout(r, 50));
+      const colorId = code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':
+                      code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
+      eventBody = {
+        summary:   `${meta.emoji} ${meta.label} – SOC`,
+        start:     { dateTime: startDT, timeZone: 'Asia/Kolkata' },
+        end:       { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
+        colorId,
+        reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] }
+      };
+    } else {
+      done++; continue;
     }
 
-    // Final stamp with exact completion time
-    localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
-    return { synced: done, total: workDays.length, totalDays: days };
-
-  } finally {
-    // Always release the mutex — even if an error was thrown
-    isSyncing = false;
+    await apiFetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(eventBody) }
+    );
+    done++;
+    if (onProgress) onProgress(done, workDays.length, `Creating event ${done} of ${workDays.length}…`);
+    await new Promise(r => setTimeout(r, 50));
   }
+
+  // Stamp the sync time so the poller won't re-fire until admin makes another change
+  const syncTime = new Date().toISOString();
+  localStorage.setItem('soc_last_sync_' + userEmail, syncTime);
+  return { synced: done, total: workDays.length, totalDays: days };
 }
 
 /* ── syncCalendar — UI-facing wrapper around syncCalendarHeadless ─────────── */
@@ -1139,12 +1176,6 @@ async function syncCalendar() {
   const progressEl = document.getElementById('sync-progress');
   const resultEl   = document.getElementById('sync-result');
   const txtEl      = document.getElementById('sync-txt');
-
-  // If a sync is already running (mutex), show feedback and bail
-  if (isSyncing) {
-    showToast('⏳ Sync already in progress — please wait…');
-    return;
-  }
 
   if (btn)        { btn.disabled = true; btn.textContent = '⏳ Syncing…'; }
   if (progressEl) progressEl.style.display = 'block';
@@ -1164,10 +1195,6 @@ async function syncCalendar() {
       if (pr) pr.textContent = pct + '%';
       if (st) st.textContent = msg;
     });
-
-    // stats is null if the mutex blocked us — shouldn't happen since we check
-    // isSyncing above, but guard defensively
-    if (!stats) return;
 
     updateLastSyncLabel();
     if (progressEl) progressEl.style.display = 'none';
@@ -1338,13 +1365,8 @@ async function loadAdminPanel() {
     const pending = logRows.filter(r => (r[STATUS_COL] === 'Pending' || r[9] === 'Pending'));
 
     let html = `
-    <div class="sec-hdr">
-      <div><h2>⚙️ Admin Panel — ${selectedMonth.replace('_',' ')}</h2></div>
-    </div>
-
     <!-- Section A: Editable Roster -->
-    <div class="admin-section">
-      <h3>📋 Editable Team Roster</h3>
+    <div class="admin-section" style="margin-top:0">
       <div id="admin-roster-wrap">`;
 
     // Render table (editable=true)
@@ -1572,11 +1594,12 @@ function toggleAutoSync(on) {
   updateAutoSyncLabel(on);
   if (on) {
     showToast('🔄 Auto-sync ON — syncing calendar now…');
-    // Do an immediate sync. The mutex (isSyncing flag) inside syncCalendarHeadless
-    // ensures the poller can't launch a second concurrent sync while this runs.
-    // We do NOT reset soc_last_sync_ to epoch here — the pre-stamp inside
-    // syncCalendarHeadless() handles preventing duplicate poller triggers.
-    syncCalendar();
+    // FIX (Bug 5 — race condition): Reset soc_last_sync_ to epoch so the
+    // poller comparison will always detect the latest server flag as "newer",
+    // guaranteeing a sync on the very next poller tick AND immediately now.
+    localStorage.setItem('soc_last_sync_' + userEmail, '1970-01-01T00:00:00.000Z');
+    syncCalendar(); // immediate sync with UI progress bar
+    // The unified poller (already running since login) will handle future syncs.
   } else {
     showToast('Auto-sync OFF');
   }
@@ -1652,20 +1675,14 @@ async function checkAndRefreshUI() {
     // ── Job 2: Calendar auto-sync ────────────────────────────────────────────
     const pref = localStorage.getItem('soc_autosync_' + userEmail) === 'true';
     if (pref && serverTs > syncLocalTs) {
-      // Guard: skip if another sync is already running (prevents duplicates)
-      if (isSyncing) {
-        console.log('[UIPoller] Sync already in progress — skipping calendar auto-sync tick');
-        return;
-      }
       console.log('[UIPoller] Auto-syncing calendar (headless)…');
+      // FIX (Bug 2+3): Call syncCalendarHeadless() — no DOM dependency.
+      // syncCalendar() would crash if My Shifts tab isn't active.
       try {
-        const stats = await syncCalendarHeadless();
-        if (stats) {
-          // Only update the key to server timestamp if sync actually completed
-          localStorage.setItem('soc_last_sync_' + userEmail, result.ts);
-          updateLastSyncLabel();
-          showToast('✅ Calendar auto-synced with updated roster!');
-        }
+        await syncCalendarHeadless();
+        localStorage.setItem('soc_last_sync_' + userEmail, result.ts);
+        updateLastSyncLabel();
+        showToast('✅ Calendar auto-synced with updated roster!');
       } catch(calErr) {
         console.warn('[UIPoller] Calendar sync error:', calErr.message);
         showToast('⚠️ Auto-sync: calendar update failed — ' + calErr.message);

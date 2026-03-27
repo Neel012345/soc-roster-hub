@@ -440,6 +440,7 @@ let pendingCount = 0;
 let auditLog = [];
 let autoSyncPoller  = null;  // legacy – kept for stopAutoSyncPoller cleanup
 let uiRefreshPoller = null;  // 30-second poller: refreshes UI + auto-syncs calendar
+let isSyncing       = false; // mutex — prevents concurrent calendar syncs → no duplicates
 
 /* ══════════════════════════════════════════════════════
    AUTH
@@ -1024,76 +1025,112 @@ async function deleteAllEventsInMonth(calendarId, ym) {
 }
 
 /* ── syncCalendarHeadless — zero DOM dependencies ────────────────────────────
-   Core sync logic extracted so it can be called from the background poller
-   without depending on the My Shifts tab being active in the DOM.
+   Core sync logic. Called by both the manual Sync button and the background
+   poller. Protected by the `isSyncing` mutex so only ONE instance can run at
+   a time — this is the root fix for duplicate events.
+
+   HOW DUPLICATES WERE CREATED (and why this fixes it):
+     The poller runs every 30s. syncCalendarHeadless takes ~30s to complete.
+     The old code only stamped soc_last_sync_ at the very END of the function.
+     So if the poller fired while a sync was already in progress, it saw
+     soc_last_sync_ still at epoch (or an old value) and launched a second
+     concurrent sync. Both instances deleted + recreated events simultaneously.
+
+   This fix does TWO things:
+     1. isSyncing mutex — if a sync is already running, any new call returns
+        immediately (null) without touching the calendar at all.
+     2. Pre-stamp soc_last_sync_ at the START of the sync with the current
+        time, so ANY poller tick that fires while the sync is in progress sees
+        a "recent" soc_last_sync_ and skips the calendar step.
+
    onProgress(done, total, msg) is optional — called after each event created.
 ──────────────────────────────────────────────────────────────────────────── */
 async function syncCalendarHeadless(onProgress) {
-  const rows   = await getRoster(selectedMonth);
-  const myIdx  = findMyRow(rows);
-  if (myIdx === -1) throw new Error('Your row not found in roster');
+  // ── MUTEX: only one sync can run at a time ──────────────────────────────
+  if (isSyncing) {
+    console.log('[Sync] Already syncing — skipping concurrent call to prevent duplicates');
+    return null;
+  }
+  isSyncing = true;
 
-  const myShifts   = parseRosterRow(rows[myIdx]);
-  const ym         = monthToYM(selectedMonth);
-  const [year, mo] = ym.split('-').map(Number);
-  const days       = getDaysInMonth(selectedMonth);
+  // ── PRE-STAMP: immediately mark sync as "in progress" so the poller ─────
+  // won't launch a second sync while this one is running (even if it takes >30s)
+  localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
 
-  const calendarId = await getOrCreateSocCalendar();
-  await deleteAllEventsInMonth(calendarId, ym);
+  try {
+    const rows   = await getRoster(selectedMonth);
+    const myIdx  = findMyRow(rows);
+    if (myIdx === -1) throw new Error('Your row not found in roster');
 
-  const workDays = Object.entries(myShifts).filter(([, c]) => !OFF_CODES.includes(c));
-  let done = 0;
+    const myShifts   = parseRosterRow(rows[myIdx]);
+    const ym         = monthToYM(selectedMonth);
+    const [year, mo] = ym.split('-').map(Number);
+    const days       = getDaysInMonth(selectedMonth);
 
-  for (const [key, code] of workDays) {
-    const d    = parseInt(key);
-    const meta = SHIFT_META[code] || SHIFT_META['WO'];
-    let eventBody;
+    const calendarId = await getOrCreateSocCalendar();
 
-    if (LEAVE_CODES.includes(code)) {
-      eventBody = {
-        summary:   `${meta.emoji || '📋'} ${meta.label} – SOC`,
-        start:     { date: `${ym}-${key}` },
-        end:       { date: `${ym}-${key}` },
-        colorId:   '11',
-        reminders: { useDefault: false }
-      };
-    } else if (!meta.allDay && meta.start) {
-      const dateStr = `${ym}-${key}`;
-      const startDT = `${dateStr}T${meta.start}:00+05:30`;
-      let endDT;
-      if (meta.nextDay) {
-        const nd    = new Date(year, mo - 1, d + 1);
-        const ndStr = `${nd.getFullYear()}-${String(nd.getMonth()+1).padStart(2,'0')}-${String(nd.getDate()).padStart(2,'0')}`;
-        endDT = `${ndStr}T${meta.end}:00+05:30`;
+    // Delete ALL existing SOC events for this month before creating new ones.
+    // This is the "clean slate" approach — guarantees zero duplicates from
+    // previous syncs even if the calendar already has events.
+    await deleteAllEventsInMonth(calendarId, ym);
+
+    const workDays = Object.entries(myShifts).filter(([, c]) => !OFF_CODES.includes(c));
+    let done = 0;
+
+    for (const [key, code] of workDays) {
+      const d    = parseInt(key);
+      const meta = SHIFT_META[code] || SHIFT_META['WO'];
+      let eventBody;
+
+      if (LEAVE_CODES.includes(code)) {
+        eventBody = {
+          summary:   `${meta.emoji || '📋'} ${meta.label} – SOC`,
+          start:     { date: `${ym}-${key}` },
+          end:       { date: `${ym}-${key}` },
+          colorId:   '11',
+          reminders: { useDefault: false }
+        };
+      } else if (!meta.allDay && meta.start) {
+        const dateStr = `${ym}-${key}`;
+        const startDT = `${dateStr}T${meta.start}:00+05:30`;
+        let endDT;
+        if (meta.nextDay) {
+          const nd    = new Date(year, mo - 1, d + 1);
+          const ndStr = `${nd.getFullYear()}-${String(nd.getMonth()+1).padStart(2,'0')}-${String(nd.getDate()).padStart(2,'0')}`;
+          endDT = `${ndStr}T${meta.end}:00+05:30`;
+        } else {
+          endDT = `${dateStr}T${meta.end}:00+05:30`;
+        }
+        const colorId = code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':
+                        code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
+        eventBody = {
+          summary:   `${meta.emoji} ${meta.label} – SOC`,
+          start:     { dateTime: startDT, timeZone: 'Asia/Kolkata' },
+          end:       { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
+          colorId,
+          reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] }
+        };
       } else {
-        endDT = `${dateStr}T${meta.end}:00+05:30`;
+        done++; continue;
       }
-      const colorId = code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':
-                      code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
-      eventBody = {
-        summary:   `${meta.emoji} ${meta.label} – SOC`,
-        start:     { dateTime: startDT, timeZone: 'Asia/Kolkata' },
-        end:       { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
-        colorId,
-        reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] }
-      };
-    } else {
-      done++; continue;
+
+      await apiFetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(eventBody) }
+      );
+      done++;
+      if (onProgress) onProgress(done, workDays.length, `Creating event ${done} of ${workDays.length}…`);
+      await new Promise(r => setTimeout(r, 50));
     }
 
-    await apiFetch(
-      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(eventBody) }
-    );
-    done++;
-    if (onProgress) onProgress(done, workDays.length, `Creating event ${done} of ${workDays.length}…`);
-    await new Promise(r => setTimeout(r, 50));
-  }
+    // Final stamp with exact completion time
+    localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
+    return { synced: done, total: workDays.length, totalDays: days };
 
-  // Stamp the sync time so the poller won't re-fire until admin makes another change
-  const syncTime = new Date().toISOString();
-  localStorage.setItem('soc_last_sync_' + userEmail, syncTime);
-  return { synced: done, total: workDays.length, totalDays: days };
+  } finally {
+    // Always release the mutex — even if an error was thrown
+    isSyncing = false;
+  }
 }
 
 /* ── syncCalendar — UI-facing wrapper around syncCalendarHeadless ─────────── */
@@ -1102,6 +1139,12 @@ async function syncCalendar() {
   const progressEl = document.getElementById('sync-progress');
   const resultEl   = document.getElementById('sync-result');
   const txtEl      = document.getElementById('sync-txt');
+
+  // If a sync is already running (mutex), show feedback and bail
+  if (isSyncing) {
+    showToast('⏳ Sync already in progress — please wait…');
+    return;
+  }
 
   if (btn)        { btn.disabled = true; btn.textContent = '⏳ Syncing…'; }
   if (progressEl) progressEl.style.display = 'block';
@@ -1121,6 +1164,10 @@ async function syncCalendar() {
       if (pr) pr.textContent = pct + '%';
       if (st) st.textContent = msg;
     });
+
+    // stats is null if the mutex blocked us — shouldn't happen since we check
+    // isSyncing above, but guard defensively
+    if (!stats) return;
 
     updateLastSyncLabel();
     if (progressEl) progressEl.style.display = 'none';
@@ -1525,12 +1572,11 @@ function toggleAutoSync(on) {
   updateAutoSyncLabel(on);
   if (on) {
     showToast('🔄 Auto-sync ON — syncing calendar now…');
-    // FIX (Bug 5 — race condition): Reset soc_last_sync_ to epoch so the
-    // poller comparison will always detect the latest server flag as "newer",
-    // guaranteeing a sync on the very next poller tick AND immediately now.
-    localStorage.setItem('soc_last_sync_' + userEmail, '1970-01-01T00:00:00.000Z');
-    syncCalendar(); // immediate sync with UI progress bar
-    // The unified poller (already running since login) will handle future syncs.
+    // Do an immediate sync. The mutex (isSyncing flag) inside syncCalendarHeadless
+    // ensures the poller can't launch a second concurrent sync while this runs.
+    // We do NOT reset soc_last_sync_ to epoch here — the pre-stamp inside
+    // syncCalendarHeadless() handles preventing duplicate poller triggers.
+    syncCalendar();
   } else {
     showToast('Auto-sync OFF');
   }
@@ -1606,14 +1652,20 @@ async function checkAndRefreshUI() {
     // ── Job 2: Calendar auto-sync ────────────────────────────────────────────
     const pref = localStorage.getItem('soc_autosync_' + userEmail) === 'true';
     if (pref && serverTs > syncLocalTs) {
+      // Guard: skip if another sync is already running (prevents duplicates)
+      if (isSyncing) {
+        console.log('[UIPoller] Sync already in progress — skipping calendar auto-sync tick');
+        return;
+      }
       console.log('[UIPoller] Auto-syncing calendar (headless)…');
-      // FIX (Bug 2+3): Call syncCalendarHeadless() — no DOM dependency.
-      // syncCalendar() would crash if My Shifts tab isn't active.
       try {
-        await syncCalendarHeadless();
-        localStorage.setItem('soc_last_sync_' + userEmail, result.ts);
-        updateLastSyncLabel();
-        showToast('✅ Calendar auto-synced with updated roster!');
+        const stats = await syncCalendarHeadless();
+        if (stats) {
+          // Only update the key to server timestamp if sync actually completed
+          localStorage.setItem('soc_last_sync_' + userEmail, result.ts);
+          updateLastSyncLabel();
+          showToast('✅ Calendar auto-synced with updated roster!');
+        }
       } catch(calErr) {
         console.warn('[UIPoller] Calendar sync error:', calErr.message);
         showToast('⚠️ Auto-sync: calendar update failed — ' + calErr.message);

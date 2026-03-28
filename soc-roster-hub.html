@@ -1345,14 +1345,13 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
   for (let d=1;d<=days;d++) {
     const isWk = dow[d-1]===0||dow[d-1]===6;
     const isTd = d===todayD;
-    html += `<th class="${isWk?'wk':''}" style="${isTd?'outline:1px solid var(--accent);':''}">${d}</th>`;
+    const dayAbbr = DOW_LABELS[dow[d-1]].slice(0,2);
+    html += `<th class="${isWk?'wk':''}" style="${isTd?'outline:1px solid var(--accent);':''}" title="${DOW_LABELS[dow[d-1]]}">
+      <div style="font-size:.68rem;line-height:1.2">${d}</div>
+      <div style="font-size:.55rem;opacity:.7;letter-spacing:.04em">${dayAbbr}</div>
+    </th>`;
   }
 
-  html += `</tr><tr class="r-dow"><th class="th-name"></th>`;
-  for (let d=1;d<=days;d++) {
-    const isWk = dow[d-1]===0||dow[d-1]===6;
-    html += `<th class="${isWk?'wk':''}">${DOW_LABELS[dow[d-1]].slice(0,2)}</th>`;
-  }
   html += `</tr></thead><tbody>`;
 
   rows.forEach((row, ri) => {
@@ -1505,22 +1504,39 @@ async function loadAdminPanel() {
 
     html += `</div></div>
 
-    <!-- Section C: Audit Log -->
+    <!-- Section C: Audit Log — filtered to current month by default -->
     <div class="admin-section">
-      <h3>📜 Recent Changes</h3>
-      <div class="card">`;
+      <h3>📜 Changes — ${selectedMonth.replace('_',' ')}
+        <span style="font-size:.72rem;font-weight:500;color:var(--muted);margin-left:8px">
+          <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer">
+            <input type="checkbox" id="audit-all-toggle" onchange="toggleAuditAll(this.checked)"
+              style="cursor:pointer;accent-color:var(--accent)">
+            <span>Show all months</span>
+          </label>
+        </span>
+      </h3>
+      <div class="card" id="audit-log-body">`;
 
-    const all = logRows.slice().reverse().slice(0,20);
-    if (!all.length) {
-      html += `<p style="font-size:.8rem;color:var(--muted)">No changes recorded yet.</p>`;
+    // Default: show only current month entries (reversed = newest first)
+    const currentMonthLabel = selectedMonth.replace('_', ' ');
+    const monthRows = logRows.filter(r => {
+      const rowMonth = (r[4] || r[2] || '').toString().trim();
+      return rowMonth === currentMonthLabel;
+    }).slice().reverse();
+
+    const auditRowsToShow = monthRows.length ? monthRows : logRows.slice().reverse().slice(0, 30);
+
+    if (!auditRowsToShow.length) {
+      html += `<p style="font-size:.8rem;color:var(--muted)">No changes recorded for ${currentMonthLabel} yet.</p>`;
     } else {
-      all.forEach(r => {
+      auditRowsToShow.forEach(r => {
         const rStatus = r[10] || r[9] || 'Pending';
         const statusColor = rStatus==='Approved'?'var(--green)':rStatus==='Rejected'?'var(--red)':'var(--yellow)';
-        html += `<div class="audit-row">
+        const monthTag = (r[4]||r[2]||'').toString().trim();
+        html += `<div class="audit-row" data-month="${monthTag}">
           <div class="audit-time">${r[1]||'—'} · ${r[2]||''}</div>
-          <div style="flex:1"><strong>${r[3]}</strong> · ${r[4]} · ${r[5]}
-            <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem"> ${r[6]}→${r[7]}</span></div>
+          <div style="flex:1"><strong>${r[3]}</strong> · ${r[4]||r[2]} · ${r[5]||r[4]}
+            <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem"> ${r[6]||r[5]}→${r[7]||r[6]}</span></div>
           <span style="color:${statusColor};font-size:.72rem;font-family:'JetBrains Mono',monospace">${rStatus}</span>
         </div>`;
       });
@@ -1635,6 +1651,36 @@ async function processRequest(localIdx, action, reqId, empName, dateStr, newCode
     await loadAdminPanel();
   } catch(e) {
     alert('Failed to process request: ' + e.message);
+  }
+}
+
+// ── Task 3: Toggle audit log between current-month and all-months view ─────────
+function toggleAuditAll(showAll) {
+  const body = document.getElementById('audit-log-body');
+  if (!body) return;
+  const currentMonthLabel = selectedMonth.replace('_', ' ');
+  body.querySelectorAll('.audit-row').forEach(row => {
+    const rowMonth = (row.dataset.month || '').trim();
+    if (showAll) {
+      row.style.display = '';  // show all rows
+    } else {
+      row.style.display = (rowMonth === currentMonthLabel) ? '' : 'none';
+    }
+  });
+  // Show "no entries" message if nothing visible
+  const visible = Array.from(body.querySelectorAll('.audit-row'))
+    .filter(r => r.style.display !== 'none');
+  let noMsg = body.querySelector('.audit-no-msg');
+  if (!visible.length) {
+    if (!noMsg) {
+      noMsg = document.createElement('p');
+      noMsg.className = 'audit-no-msg';
+      noMsg.style.cssText = 'font-size:.8rem;color:var(--muted)';
+      noMsg.textContent = showAll ? 'No changes recorded yet.' : `No changes recorded for ${currentMonthLabel} yet.`;
+      body.appendChild(noMsg);
+    }
+  } else if (noMsg) {
+    noMsg.remove();
   }
 }
 

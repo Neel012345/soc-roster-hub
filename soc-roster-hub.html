@@ -246,17 +246,6 @@ table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
 .wk{background:rgba(0,0,0,.1);}
 .td-today{background:rgba(0,212,255,.06)!important;}
 
-/* ─── Spotlight Mode ─── */
-.tr-dimmed { opacity: 0.2; }
-.tr-spotlight { 
-  outline: 2px solid var(--accent); 
-  outline-offset: -1px;
-  opacity: 1 !important;
-  background: rgba(0,212,255,.08) !important;
-}
-.td-name-clickable { cursor: pointer; }
-.td-name-clickable:hover { color: var(--accent); }
-
 /* ─── Roster Chips ─── */
 .rc{display:inline-flex;align-items:center;justify-content:center;width:30px;height:24px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;}
 .rc-dim{opacity:.25;}
@@ -372,6 +361,37 @@ table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
 .toggle input:checked + .toggle-slider:before{transform:translateX(18px);}
 .desync-btn{padding:7px 13px;border-radius:8px;border:1px solid rgba(239,68,68,.4);background:transparent;color:var(--red);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;}
 .desync-btn:hover{background:rgba(239,68,68,.1);}
+
+/* ─── Task 1: Server-side sync badge ─── */
+.serversync-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.serversync-badge{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:10px;font-weight:700;}
+.serversync-badge.on{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);}
+.serversync-badge.off{background:rgba(71,85,105,.15);color:var(--muted);border:1px solid var(--border);}
+.btn-serversync{padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Syne',sans-serif;font-size:.74rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-serversync:hover{border-color:var(--green);color:var(--green);}
+.btn-serversync.revoke{border-color:rgba(239,68,68,.4);color:var(--red);}
+.btn-serversync.revoke:hover{background:rgba(239,68,68,.08);}
+body.light .serversync-badge.on{background:rgba(4,120,87,.12);border-color:rgba(4,120,87,.3);}
+body.light .serversync-badge.off{background:rgba(51,65,85,.08);}
+body.light .btn-serversync{border-color:#93c5fd;color:#1e3a5f;}
+body.light .btn-serversync:hover{border-color:#047857;color:#047857;}
+
+/* ─── Task 2: Shift count summary tfoot ─── */
+table.tt tfoot tr{border-top:2px solid var(--border2);}
+table.tt tfoot td{padding:3px 2px;text-align:center;vertical-align:middle;}
+table.tt tfoot td.tf-label{text-align:left;padding:4px 8px 4px 14px;font-size:.6rem;font-family:'JetBrains Mono',monospace;font-weight:700;white-space:nowrap;position:sticky;left:0;background:var(--s2);z-index:5;border-right:1px solid var(--border);letter-spacing:.05em;text-transform:uppercase;color:var(--text2);}
+.cnt-chip{display:inline-flex;align-items:center;justify-content:center;width:22px;height:18px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;}
+.cnt-zero{opacity:.15;}
+body.light table.tt tfoot td.tf-label{background:#dbeafe;color:#1e3a5f;}
+body.light table.tt tfoot tr{border-top-color:#93c5fd;}
+
+/* ─── Task 3: Employee row highlight ─── */
+table.tt tbody tr.emp-hl td               {background:rgba(245,158,11,.1) !important;}
+table.tt tbody tr.emp-hl td.td-name       {background:rgba(245,158,11,.22) !important;color:var(--yellow) !important;font-weight:800;}
+table.tt tbody tr.emp-hl .rc              {outline:2px solid var(--yellow);outline-offset:1px;transform:scale(1.05);position:relative;z-index:1;}
+body.light table.tt tbody tr.emp-hl td    {background:rgba(180,83,9,.08) !important;}
+body.light table.tt tbody tr.emp-hl td.td-name{background:rgba(180,83,9,.18) !important;color:#92400e !important;}
+body.light table.tt tbody tr.emp-hl .rc   {outline-color:#b45309;}
 
 /* ─── Responsive ─── */
 @media(max-width:600px){
@@ -525,7 +545,9 @@ let pendingCount = 0;
 let auditLog = [];
 let autoSyncPoller  = null;  // legacy – kept for stopAutoSyncPoller cleanup
 let uiRefreshPoller = null;  // 30-second poller: refreshes UI + auto-syncs calendar
-let highlightedEmployee = null;
+let isSyncing       = false; // mutex — prevents concurrent calendar syncs (duplicate events)
+let codeClient      = null;  // Task 1: GIS code client for offline auth code flow
+let selectedEmpRow  = null;  // Task 3: currently highlighted employee <tr>
 
 /* ══════════════════════════════════════════════════════
    AUTH
@@ -539,6 +561,14 @@ window.addEventListener('load', () => {
         client_id: CLIENT_ID,
         scope: SCOPES,
         callback: handleToken
+      });
+
+      // Task 1: code client for one-time offline access (gets refresh_token)
+      codeClient = google.accounts.oauth2.initCodeClient({
+        client_id: CLIENT_ID,
+        scope: 'openid email profile https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar',
+        ux_mode: 'popup',
+        callback: handleAuthCode
       });
 
       // Try to restore session from sessionStorage
@@ -735,6 +765,9 @@ async function initApp() {
   await loadMyShifts();
   if (isAdmin) checkPendingRequests();
 
+  // Task 1: check if server-side sync is already enabled for this user
+  checkServerSyncStatus();
+
   // ── Start the unified 30-second poller (always on while logged in) ─────────
   // Handles both: (1) auto-refresh UI when admin makes a change,
   // (2) auto-sync calendar when auto-sync pref is ON.
@@ -823,6 +856,7 @@ function switchTab(id, btn) {
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
   activeTab = id;
+  selectedEmpRow = null; // Task 3: clear highlight on tab switch
 
   if (id === 'my-shifts')    loadMyShifts();
   if (id === 'team-roster')  loadTeamRoster();
@@ -830,8 +864,9 @@ function switchTab(id, btn) {
 }
 
 async function onMonthChange(month) {
-  selectedMonth = month;
-  rosterCache = {};   // clear cache so fresh data loads
+  selectedMonth  = month;
+  selectedEmpRow = null; // Task 3: clear highlight on month change
+  rosterCache    = {};   // clear cache so fresh data loads
   if (activeTab === 'my-shifts')   await loadMyShifts();
   if (activeTab === 'team-roster') await loadTeamRoster();
   if (activeTab === 'admin-panel') await loadAdminPanel();
@@ -881,6 +916,11 @@ async function loadMyShifts() {
             <span id="autosync-label" style="color:var(--muted)">Auto-sync: OFF</span>
           </div>
           <button class="desync-btn" onclick="openDesyncModal()">🗑️ De-sync</button>
+        </div>
+        <div class="serversync-row">
+          <span id="serversync-badge" class="serversync-badge off">⚡ Background Sync: OFF</span>
+          <button id="serversync-btn" class="btn-serversync" onclick="enableServerSync()">Enable Background Sync</button>
+          <span style="font-size:.68rem;color:var(--muted);font-family:'JetBrains Mono',monospace">Calendar syncs even when you're offline</span>
         </div>
         <div class="cal-info" id="last-sync-info"></div>
       </div>
@@ -1115,6 +1155,16 @@ async function deleteAllEventsInMonth(calendarId, ym) {
    onProgress(done, total, msg) is optional — called after each event created.
 ──────────────────────────────────────────────────────────────────────────── */
 async function syncCalendarHeadless(onProgress) {
+  // ── Mutex: only one sync can run at a time ──────────────────────────────────
+  if (isSyncing) {
+    console.log('[Sync] Already running — skipping concurrent call');
+    return null;
+  }
+  isSyncing = true;
+  // Pre-stamp so the poller won't launch a second sync while this one runs
+  localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
+
+  try {
   const rows   = await getRoster(selectedMonth);
   const myIdx  = findMyRow(rows);
   if (myIdx === -1) throw new Error('Your row not found in roster');
@@ -1176,10 +1226,12 @@ async function syncCalendarHeadless(onProgress) {
     await new Promise(r => setTimeout(r, 50));
   }
 
-  // Stamp the sync time so the poller won't re-fire until admin makes another change
-  const syncTime = new Date().toISOString();
-  localStorage.setItem('soc_last_sync_' + userEmail, syncTime);
+  localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
   return { synced: done, total: workDays.length, totalDays: days };
+
+  } finally {
+    isSyncing = false; // always release mutex even on error
+  }
 }
 
 /* ── syncCalendar — UI-facing wrapper around syncCalendarHeadless ─────────── */
@@ -1307,7 +1359,7 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
     const empName = row[1]?.trim() || '';
     const isMe    = empName.toLowerCase() === userName?.toLowerCase();
     html += `<tr class="${isMe?'me':''}" data-n="${empName.toLowerCase()}">
-      <td class="td-name td-name-clickable" onclick="spotlightEmployee('${empName.replace(/'/g, "\\'")}')" title="Click to highlight ${empName}'s shifts">
+      <td class="td-name" onclick="toggleEmpHighlight(this)" style="cursor:pointer" title="Click to highlight row">
         <span class="emp-dot" style="background:${isMe?'var(--accent)':'var(--muted)'}"></span>${empName}
       </td>`;
 
@@ -1325,32 +1377,42 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
     html += `</tr>`;
   });
 
-  html += `</tbody><tfoot>`;
-
-  const countRows = [
-    { label:'Total Morning Shift', code:'MS',  color:'#DEEAF1' },
-    { label:'Total General Shift', code:'GS',  color:'#E2EFDA' },
-    { label:'Total Afternoon Shift',code:'AS', color:'#FCE4D6' },
-    { label:'Total Night Shift',   code:'NS',  color:'#EAD1DC' },
+  // ── TASK 2: tfoot shift-count summary ──────────────────────────────────────
+  // Compute per-day counts for each displayed shift type
+  const SUMMARY_SHIFTS = [
+    { key:'MS',  cls:'sh-MS',  label:'MS'  },
+    { key:'GS',  cls:'sh-GS',  label:'GS'  },
+    { key:'AS',  cls:'sh-AS',  label:'AS'  },
+    { key:'NS',  cls:'sh-NS',  label:'NS'  },
+    { key:'WFH', cls:'sh-WFH', label:'WFH' },
+    { key:'WO',  cls:'sh-WO',  label:'WO'  },
   ];
 
-  countRows.forEach(({ label, code, color }) => {
-    html += `<tr style="border-top:2px solid var(--border)">
-      <td class="td-name" style="background:${color};color:#000;font-size:.72rem;font-weight:700">
-        ${label}
-      </td>`;
+  // Build dailyCount[day][shiftKey] = n
+  const dailyCount = {};
+  for (let d = 1; d <= days; d++) {
+    dailyCount[d] = { MS:0, GS:0, AS:0, NS:0, WFH:0, WO:0 };
+    rows.forEach(row => {
+      const code = (row[d+1]||'WO').trim().toUpperCase();
+      const base = code.startsWith('WFH') ? 'WFH' : code;
+      if (dailyCount[d][base] !== undefined) dailyCount[d][base]++;
+      else dailyCount[d]['WO']++;
+    });
+  }
+
+  html += `</tbody><tfoot>`;
+  SUMMARY_SHIFTS.forEach(s => {
+    html += `<tr><td class="tf-label">${s.label}</td>`;
     for (let d = 1; d <= days; d++) {
-      const count = rows.filter(row => {
-        const c = (row[d+1]||'WO').trim().toUpperCase();
-        return code === 'WFH' ? c.startsWith('WFH') : c === code;
-      }).length;
-      html += `<td style="background:${color};text-align:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:#000">
-        ${count || ''}
+      const n    = dailyCount[d][s.key] || 0;
+      const isWk = dow[d-1]===0||dow[d-1]===6;
+      const isTd = d===todayD;
+      html += `<td class="${isWk?'wk':''} ${isTd?'td-today':''}">
+        <span class="cnt-chip ${s.cls} ${n===0?'cnt-zero':''}">${n}</span>
       </td>`;
     }
     html += `</tr>`;
   });
-
   html += `</tfoot></table></div>`;
 
   el.innerHTML = html;
@@ -1378,29 +1440,6 @@ function filterTeam() {
       });
     } else {
       tr.querySelectorAll('.rc').forEach(rc => rc.classList.remove('rc-dim'));
-    }
-  });
-}
-
-function spotlightEmployee(name) {
-  if (highlightedEmployee === name) {
-    highlightedEmployee = null;
-    document.querySelectorAll('#team-tt tbody tr').forEach(tr => {
-      tr.classList.remove('tr-dimmed', 'tr-spotlight');
-    });
-    // restore filter
-    filterTeam();
-    return;
-  }
-  highlightedEmployee = name;
-  document.querySelectorAll('#team-tt tbody tr').forEach(tr => {
-    if (!tr.classList.contains('r-dates') && !tr.classList.contains('r-dow') && !tr.closest('tfoot')) {
-      const isTarget = tr.dataset.n === name.toLowerCase();
-      tr.classList.toggle('tr-dimmed', !isTarget);
-      tr.classList.toggle('tr-spotlight', isTarget);
-      if (isTarget) {
-        tr.classList.remove('hidden'); // Ensure spotlight takes priority over filter
-      }
     }
   });
 }
@@ -1629,7 +1668,8 @@ function loadAutoSyncPref() {
     updateAutoSyncLabel(pref);
   }
   updateLastSyncLabel();
-  // Note: the unified UI refresh poller is started by initApp() — no separate start needed here.
+  // Reflect current server-sync status in the badge (re-check each time tab renders)
+  checkServerSyncStatus();
 }
 
 function updateAutoSyncLabel(on) {
@@ -1900,6 +1940,115 @@ async function doDesync(scope) {
   }
 
   if (btn) { btn.disabled = false; btn.textContent = '📅 Sync to SOC Calendar'; }
+}
+
+/* ══════════════════════════════════════════════════════
+   TASK 3 — Employee Row Highlight
+   Click any name cell to highlight the entire row.
+   Click again or a different name to change selection.
+══════════════════════════════════════════════════════ */
+function toggleEmpHighlight(nameTd) {
+  const tr = nameTd.closest('tr');
+  // Deselect if clicking the already-selected row
+  if (selectedEmpRow === tr) {
+    tr.classList.remove('emp-hl');
+    selectedEmpRow = null;
+    return;
+  }
+  // Clear any existing highlight across all tables
+  document.querySelectorAll('table.tt tbody tr.emp-hl')
+    .forEach(r => r.classList.remove('emp-hl'));
+  tr.classList.add('emp-hl');
+  selectedEmpRow = tr;
+}
+
+/* ══════════════════════════════════════════════════════
+   TASK 1 — Server-Side Calendar Sync
+   One-time setup stores a refresh_token in Cloudflare KV
+   via the Worker. After that, every admin shift edit
+   triggers a direct server→calendar sync — no browser needed.
+
+   SETUP REQUIRED IN CLOUDFLARE (one-time):
+     1. Create KV namespace "SOC_TOKENS" in Cloudflare dashboard
+     2. In wrangler.toml: [[kv_namespaces]] binding="SOC_TOKENS" id="<id>"
+     3. Add env vars: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+══════════════════════════════════════════════════════ */
+
+// Called on login — updates badge to show if KV token already exists
+async function checkServerSyncStatus() {
+  try {
+    const result = await callAppsScript({ action: 'checkServerSync' });
+    updateServerSyncUI(result.enabled === true);
+  } catch(e) {
+    console.warn('[ServerSync] status check failed:', e.message);
+  }
+}
+
+// Update the badge + button to reflect current state
+function updateServerSyncUI(enabled) {
+  const badge = document.getElementById('serversync-badge');
+  const btn   = document.getElementById('serversync-btn');
+  if (!badge || !btn) return;
+  if (enabled) {
+    badge.className   = 'serversync-badge on';
+    badge.textContent = '⚡ Background Sync: ON';
+    btn.textContent   = 'Revoke';
+    btn.className     = 'btn-serversync revoke';
+    btn.onclick       = revokeServerSync;
+  } else {
+    badge.className   = 'serversync-badge off';
+    badge.textContent = '⚡ Background Sync: OFF';
+    btn.textContent   = 'Enable Background Sync';
+    btn.className     = 'btn-serversync';
+    btn.onclick       = enableServerSync;
+  }
+}
+
+// Kick off the one-time offline OAuth code flow
+function enableServerSync() {
+  if (!codeClient) { showToast('⚠️ Google API not ready, please retry in a moment'); return; }
+  showToast('🔐 Opening Google consent — please approve calendar access…');
+  // prompt=consent forces Google to return refresh_token even if previously granted
+  codeClient.requestCode();
+}
+
+// Called by GIS after the user approves the consent screen
+async function handleAuthCode(resp) {
+  if (resp.error) {
+    showToast('❌ Background sync cancelled: ' + resp.error);
+    return;
+  }
+  const badge = document.getElementById('serversync-badge');
+  const btn   = document.getElementById('serversync-btn');
+  if (badge) { badge.textContent = '⏳ Storing token…'; }
+  if (btn)   { btn.disabled = true; btn.textContent = 'Setting up…'; }
+
+  try {
+    const result = await callAppsScript({ action: 'storeRefreshToken', code: resp.code });
+    if (!result.ok && result.error === 'no_refresh_token') {
+      showToast('⚠️ Google did not return a refresh token. Revoke app access at myaccount.google.com/permissions and try again.');
+      updateServerSyncUI(false);
+      if (btn) btn.disabled = false;
+      return;
+    }
+    showToast('✅ Background sync enabled! Calendar will update even when you\'re offline.');
+    updateServerSyncUI(true);
+  } catch(e) {
+    showToast('❌ Failed to enable background sync: ' + e.message);
+    updateServerSyncUI(false);
+    if (btn) btn.disabled = false;
+  }
+}
+
+// Remove the stored token from KV
+async function revokeServerSync() {
+  try {
+    await callAppsScript({ action: 'revokeServerSync' });
+    showToast('🗑️ Background sync revoked — calendar will only sync when you\'re logged in.');
+    updateServerSyncUI(false);
+  } catch(e) {
+    showToast('❌ Revoke failed: ' + e.message);
+  }
 }
 
 function showToast(msg) {

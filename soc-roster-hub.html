@@ -57,60 +57,65 @@ body.light .btn-sm { border-color:#93c5fd; color:#1e3a5f; }
 body.light .btn-sm:hover { border-color:#1d6fc4; color:#1d6fc4; }
 
 /* ── Light mode: vivid shift chip colors — each uniquely distinct ── */
-body.light .sh-MS  { background:#bfdbfe; color:#1e40af; font-weight:800; }
-body.light .sh-GS  { background:#bbf7d0; color:#065f46; font-weight:800; }
-body.light .sh-AS  { background:#fde68a; color:#92400e; font-weight:800; }
-body.light .sh-NS  { background:#ede9fe; color:#3730a3; font-weight:800; }
-body.light .sh-WFH { background:#a5f3fc; color:#164e63; font-weight:800; }
-body.light .sh-WO  { background:#e2e8f0; color:#475569; font-weight:700; }
-body.light .sh-VL  { background:#ffe4e6; color:#9f1239; font-weight:800; }
-body.light .sh-CL  { background:#fca5a5; color:#7f1d1d; font-weight:800; }
-body.light .sh-SL  { background:#fed7aa; color:#7c2d12; font-weight:800; }
-body.light .sh-CO  { background:#fef9c3; color:#713f12; font-weight:800; }
-body.light .sh-GH  { background:#ccfbf1; color:#134e4a; font-weight:800; }
+body.light .sh-MS  { background:#2563eb; color:#ffffff; font-weight:800; }
+body.light .sh-GS  { background:#059669; color:#ffffff; font-weight:800; }
+body.light .sh-AS  { background:#d97706; color:#ffffff; font-weight:800; }
+body.light .sh-NS  { background:#7c3aed; color:#ffffff; font-weight:800; }
+body.light .sh-WFH { background:#0891b2; color:#ffffff; font-weight:800; }
+body.light .sh-WO  { background:#94a3b8; color:#1e293b; font-weight:700; }
+body.light .sh-VL  { background:#e11d48; color:#ffffff; font-weight:800; }
+body.light .sh-CL  { background:#991b1b; color:#ffffff; font-weight:800; }
+body.light .sh-SL  { background:#c2410c; color:#ffffff; font-weight:800; }
+body.light .sh-CO  { background:#b45309; color:#ffffff; font-weight:800; }
+body.light .sh-GH  { background:#0d9488; color:#ffffff; font-weight:800; }
 
 /* ── Light mode: vivid shift cell backgrounds (My Shifts grid) ── */
-body.light .bg-MS  { background:#bfdbfe; border-color:#93c5fd; }
-body.light .bg-GS  { background:#bbf7d0; border-color:#6ee7b7; }
-body.light .bg-AS  { background:#fde68a; border-color:#fbbf24; }
-body.light .bg-NS  { background:#ede9fe; border-color:#c4b5fd; }
-body.light .bg-WFH { background:#a5f3fc; border-color:#67e8f9; }
-body.light .bg-WO  { background:#e2e8f0; border-color:#cbd5e1; }
-body.light .bg-VL  { background:#ffe4e6; border-color:#fda4af; }
-body.light .bg-CL  { background:#fca5a5; border-color:#f87171; }
-body.light .bg-SL  { background:#fed7aa; border-color:#fb923c; }
-body.light .bg-CO  { background:#fef9c3; border-color:#fde047; }
-body.light .bg-GH  { background:#ccfbf1; border-color:#5eead4; }
-/* text inside shift cells */
-body.light .bg-MS .code  { color:#1e40af; }
-body.light .bg-GS .code  { color:#065f46; }
-body.light .bg-AS .code  { color:#92400e; }
-body.light .bg-NS .code  { color:#3730a3; }
-body.light .bg-WFH .code { color:#164e63; }
-body.light .bg-WO .code  { color:#475569; }
-body.light .bg-VL .code  { color:#9f1239; }
-body.light .bg-CL .code  { color:#7f1d1d; }
-body.light .bg-SL .code  { color:#7c2d12; }
-body.light .bg-CO .code  { color:#713f12; }
-body.light .bg-GH .code  { color:#134e4a; }
-body.light .sc .dn { color:rgba(15,23,42,.45); }
-body.light .sc.today-cell .dn { color:#1d6fc4; }
-
+/* Using solid saturated backgrounds to match the chip colors in team roster */
+body.light .bg-MS  { background:#2563eb; border:2px solid #1d4ed8; }
+body.light .bg-GS  { background:#059669; border:2px solid #047857; }
+body.light .bg-AS  { background:#d97706; border:2px solid #b45309; }
+body.light .bg-NS  { background:#7c3aed; border:2px solid #6d28d9; }
+body.light .bg-WFH { background:#0891b2; border:2px solid #0e7490; }
+body.light .bg-WO  { background:#e2e8f0; border:2px solid #94a3b8; }
+body.light .bg-VL  { background:#e11d48; border:2px solid #be123c; }
+body.light .bg-CL  { background:#991b1b; border:2px solid #7f1d1d; }
+body.light .bg-SL  { background:#c2410c; border:2px solid #9a3412; }
+body.light .bg-CO  { background:#b45309; border:2px solid #92400e; }
+body.light .bg-GH  { background:#0d9488; border:2px solid #0f766e; }
+/* text inside shift cells — pure white on colored bg, dark on light bg */
+body.light .bg-MS .code  { color:#ffffff; font-weight:900; }
+body.light .bg-GS .code  { color:#ffffff; font-weight:900; }
+body.light .bg-AS .code  { color:#ffffff; font-weight:900; }
+body.light .bg-NS .code  { color:#ffffff; font-weight:900; }
+body.light .bg-WFH .code { color:#ffffff; font-weight:900; }
+body.light .bg-WO .code  { color:#475569; font-weight:800; }
+body.light .bg-VL .code  { color:#ffffff; font-weight:900; }
+body.light .bg-CL .code  { color:#ffffff; font-weight:900; }
+body.light .bg-SL .code  { color:#ffffff; font-weight:900; }
+body.light .bg-CO .code  { color:#ffffff; font-weight:900; }
+body.light .bg-GH .code  { color:#ffffff; font-weight:900; }
+/* day number inside cell */
+body.light .sc .dn { color:rgba(255,255,255,0.7); }
+body.light .bg-WO .dn { color:rgba(71,85,105,0.6); }
+body.light .sc.today-cell .dn { color:#ffffff; font-weight:800; }
+/* time text */
+body.light .sc .tm { color:rgba(255,255,255,0.8); }
+body.light .bg-WO .tm { color:rgba(71,85,105,0.5); }
 /* ── Light mode: table ── */
-body.light table.tt tbody tr { border-bottom-color:rgba(147,197,253,.5); }
-body.light table.tt tbody tr:hover { background:rgba(29,111,196,.07); }
-body.light table.tt tbody tr.me  { background:rgba(29,111,196,.12); }
-/* FIX Issue 2: sticky name cell — keep it light on hover, never go dark */
-body.light table.tt td.td-name               { background:#eff6ff; color:#0f172a; }
+body.light table.tt tbody tr { border-bottom-color:rgba(96,165,250,.4); }
+body.light table.tt tbody tr:hover { background:rgba(29,111,196,.09); }
+body.light table.tt tbody tr.me  { background:rgba(29,111,196,.15); }
+/* Sticky name cell — keep it light on hover, never go dark */
+body.light table.tt td.td-name               { background:#eff6ff; color:#0f172a; font-weight:700; }
 body.light table.tt tbody tr:hover td.td-name { background:#dbeafe; color:#0f172a; }
 body.light table.tt tbody tr.me td.td-name   { background:#bfdbfe; color:#0f172a; }
-body.light table.tt thead tr.r-dates th      { background:#dbeafe; color:#1e3a5f; }
-body.light table.tt thead tr.r-dates th.th-name { background:#dbeafe; }
-body.light table.tt thead tr.r-dow th        { background:#eff6ff; color:#3b6ea5; }
-body.light table.tt thead tr.r-dow th.th-name { background:#eff6ff; }
-body.light .wk { background:rgba(147,197,253,.18); }
-body.light .td-today { background:rgba(29,111,196,.1) !important; }
-body.light .rc-WO { background:#cbd5e1; color:#334155; opacity:1; }
+body.light table.tt thead tr.r-dates th      { background:#bfdbfe; color:#0f172a; font-weight:800; font-size:.75rem; }
+body.light table.tt thead tr.r-dates th.th-name { background:#bfdbfe; }
+body.light table.tt thead tr.r-dow th        { background:#dbeafe; color:#1e40af; font-weight:700; font-size:.65rem; }
+body.light table.tt thead tr.r-dow th.th-name { background:#dbeafe; }
+body.light .wk { background:rgba(96,165,250,.15); }
+body.light .td-today { background:rgba(29,111,196,.12) !important; }
+body.light .rc-WO { background:#cbd5e1; color:#1e293b; opacity:1; font-weight:700; }
 
 /* ── Light mode: stat boxes, cards ── */
 body.light .stat-box { background:#eff6ff; border-color:#93c5fd; }
@@ -394,11 +399,63 @@ body.light table.tt tfoot tr{border-top-color:#93c5fd;}
 
 /* ─── Task 3: Employee row highlight ─── */
 table.tt tbody tr.emp-hl td               {background:rgba(245,158,11,.1) !important;}
-table.tt tbody tr.emp-hl td.td-name       {background:rgba(245,158,11,.22) !important;color:var(--yellow) !important;font-weight:800;}
+table.tt tbody tr.emp-hl td.td-name       {background:rgba(245,158,11,.22) !important;
+                                           color:var(--yellow) !important;
+                                           /* DO NOT change font-weight or padding — causes blowout */
+                                           overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 table.tt tbody tr.emp-hl .rc              {outline:2px solid var(--yellow);outline-offset:1px;transform:scale(1.05);position:relative;z-index:1;}
 body.light table.tt tbody tr.emp-hl td    {background:rgba(180,83,9,.08) !important;}
-body.light table.tt tbody tr.emp-hl td.td-name{background:rgba(180,83,9,.18) !important;color:#92400e !important;}
+body.light table.tt tbody tr.emp-hl td.td-name{background:rgba(180,83,9,.18) !important;
+                                              color:#92400e !important;
+                                              overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 body.light table.tt tbody tr.emp-hl .rc   {outline-color:#b45309;}
+
+/* ─── Task 4: Day column vertical highlight ─── */
+/* td/th in highlighted column get a vivid teal wash */
+table.tt thead th.col-hl        {background:rgba(0,212,255,.30) !important;
+                                  color:var(--accent) !important;
+                                  font-weight:800;outline:2px solid var(--accent);outline-offset:-1px;}
+table.tt thead tr.r-dow th.col-hl{background:rgba(0,212,255,.18) !important;
+                                   color:var(--accent) !important;font-weight:700;}
+table.tt tbody td.col-hl        {background:rgba(0,212,255,.12) !important;}
+table.tt tfoot td.col-hl        {background:rgba(0,212,255,.18) !important;}
+/* chips inside highlighted column get cyan outline — same pattern as row highlight */
+table.tt tbody td.col-hl .rc    {outline:2px solid var(--accent);outline-offset:1px;
+                                  transform:scale(1.05);position:relative;z-index:1;}
+/* header cursor + hover */
+table.tt thead tr.r-dates th:not(.th-name){cursor:pointer;}
+table.tt thead tr.r-dates th:not(.th-name):hover{background:rgba(0,212,255,.1);}
+/* Light mode overrides */
+body.light table.tt thead th.col-hl         {background:rgba(29,111,196,.30) !important;
+                                              color:#1d4ed8 !important;
+                                              outline-color:#1d4ed8;}
+body.light table.tt thead tr.r-dow th.col-hl{background:rgba(29,111,196,.15) !important;
+                                              color:#1d4ed8 !important;}
+body.light table.tt tbody td.col-hl         {background:rgba(29,111,196,.10) !important;}
+body.light table.tt tfoot td.col-hl         {background:rgba(29,111,196,.18) !important;}
+body.light table.tt tbody td.col-hl .rc     {outline-color:#2563eb;}
+body.light table.tt thead tr.r-dates th:not(.th-name):hover{background:rgba(29,111,196,.1);}
+
+/* ─── New Task 2: WO count sticky right column (admin panel only) ─── */
+.th-wo-count{position:sticky;right:0;background:var(--s2);z-index:15;
+             font-size:.65rem;font-family:'JetBrains Mono',monospace;font-weight:700;
+             color:var(--text2);text-align:center;padding:5px 8px;
+             border-left:2px solid var(--border2);min-width:36px;white-space:nowrap;}
+.td-wo-count{position:sticky;right:0;background:var(--card);z-index:4;
+             text-align:center;padding:3px 6px;border-left:2px solid var(--border);}
+.wo-count-badge{display:inline-flex;align-items:center;justify-content:center;
+                width:24px;height:20px;border-radius:5px;font-family:'JetBrains Mono',monospace;
+                font-size:.68rem;font-weight:800;
+                background:rgba(71,85,105,.25);color:var(--text2);}
+/* highlight if the row is highlighted */
+table.tt tbody tr.emp-hl .td-wo-count .wo-count-badge{background:rgba(245,158,11,.35);color:var(--yellow);}
+/* light mode */
+body.light .th-wo-count{background:#bfdbfe;color:#1e3a5f;border-left-color:#60a5fa;}
+body.light .td-wo-count{background:#eff6ff;border-left-color:#93c5fd;}
+body.light .wo-count-badge{background:#cbd5e1;color:#334155;}
+body.light table.tt tbody tr.emp-hl .td-wo-count .wo-count-badge{background:rgba(180,83,9,.3);color:#92400e;}
+body.light table.tt tbody tr:hover .td-wo-count{background:#dbeafe;}
+body.light table.tt tbody tr.me .td-wo-count{background:#bfdbfe;}
 
 /* ─── Responsive ─── */
 @media(max-width:600px){
@@ -558,6 +615,7 @@ let uiRefreshPoller = null;  // 30-second poller: refreshes UI + auto-syncs cale
 let isSyncing       = false; // mutex — prevents concurrent calendar syncs (duplicate events)
 let codeClient      = null;  // Task 1: GIS code client for offline auth code flow
 let selectedEmpRow  = null;  // Task 3: currently highlighted employee <tr>
+let selectedDayCol  = null;  // Task 4: currently highlighted day column (1-based)
 
 /* ══════════════════════════════════════════════════════
    AUTH
@@ -742,9 +800,8 @@ async function initApp() {
     `<option value="${m}" ${m === selectedMonth ? 'selected' : ''}>${m.replace('_',' ')}</option>`
   ).join('');
 
-  // Load Employee_Master
-  showLoading('Loading employee data…');
-  const empRows = await sheetsRead('Employee_Master!A3:F25');
+  // Load Employee_Master — range extended to F200 to support any team size
+  const empRows = await sheetsRead('Employee_Master!A3:F200');
   employeeMaster = empRows
     .filter(r => r[1])
     .map(r => ({
@@ -822,7 +879,9 @@ async function getRoster(month) {
   if (rosterCache[month]) return rosterCache[month];
   const days = getDaysInMonth(month);
   const lastCol = colLetter(days + 2);
-  const rows = await sheetsRead(`${month}!A4:${lastCol}22`);
+  // !! CRITICAL FIX: was hardcoded to row 22 (max 18 employees).
+  // Extended to row 200 so any number of employees is supported.
+  const rows = await sheetsRead(`${month}!A4:${lastCol}200`);
   rosterCache[month] = rows;
   return rows;
 }
@@ -867,6 +926,7 @@ function switchTab(id, btn) {
   btn.classList.add('active');
   activeTab = id;
   selectedEmpRow = null; // Task 3: clear highlight on tab switch
+  selectedDayCol = null; // Task 4: clear column highlight on tab switch
 
   if (id === 'my-shifts')    loadMyShifts();
   if (id === 'team-roster')  loadTeamRoster();
@@ -876,6 +936,7 @@ function switchTab(id, btn) {
 async function onMonthChange(month) {
   selectedMonth  = month;
   selectedEmpRow = null; // Task 3: clear highlight on month change
+  selectedDayCol = null; // Task 4: clear column highlight on month change
   rosterCache    = {};   // clear cache so fresh data loads
   if (activeTab === 'my-shifts')   await loadMyShifts();
   if (activeTab === 'team-roster') await loadTeamRoster();
@@ -1316,11 +1377,14 @@ async function loadTeamRoster() {
 }
 
 function renderTeamTable(el, rows, days, dow, todayD, editable) {
-  if (!rows.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><p>No roster data found for this month.</p></div>`; return; }
+  // ── Task 1 fix: filter out any sheet row where column B (Name) is blank ──
+  // Row 4 in the sheet is a day-label header row with no employee name.
+  const empRows = rows.filter(r => r[1]?.toString().trim());
+  if (!empRows.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><p>No roster data found for this month.</p></div>`; return; }
 
   // Count totals per shift type
   const totals = {};
-  rows.forEach(row => {
+  empRows.forEach(row => {
     for (let d=1;d<=days;d++) {
       const code = (row[d+1]||'WO').trim().toUpperCase();
       const base = code.startsWith('WFH') ? 'WFH' : code;
@@ -1331,7 +1395,7 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
   let html = `
   <div class="sec-hdr">
     <div><h2>👥 ${selectedMonth.replace('_',' ')} — Team Roster</h2>
-    <p>${rows.length} employees</p></div>
+    <p>${empRows.length} employees</p></div>
   </div>
 
   <div class="toolbar">
@@ -1357,17 +1421,20 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
   for (let d=1;d<=days;d++) {
     const isWk = dow[d-1]===0||dow[d-1]===6;
     const isTd = d===todayD;
-    html += `<th class="${isWk?'wk':''}" style="${isTd?'outline:1px solid var(--accent);':''}">${d}</th>`;
+    html += `<th class="${isWk?'wk':''}" data-col="${d}" onclick="toggleDayHighlight(${d},this)" style="${isTd?'outline:1px solid var(--accent);':''};cursor:pointer" title="Click to highlight column">${d}</th>`;
   }
+  // WO count header — only show in admin panel (editable=true)
+  if (editable) html += `<th class="th-wo-count" title="Total Week Offs this month">WO</th>`;
 
   html += `</tr><tr class="r-dow"><th class="th-name"></th>`;
   for (let d=1;d<=days;d++) {
     const isWk = dow[d-1]===0||dow[d-1]===6;
     html += `<th class="${isWk?'wk':''}">${DOW_LABELS[dow[d-1]].slice(0,2)}</th>`;
   }
+  if (editable) html += `<th class="th-wo-count"></th>`;
   html += `</tr></thead><tbody>`;
 
-  rows.forEach((row, ri) => {
+  empRows.forEach((row, ri) => {
     const empName = row[1]?.trim() || '';
     const isMe    = empName.toLowerCase() === userName?.toLowerCase();
     html += `<tr class="${isMe?'me':''}" data-n="${empName.toLowerCase()}">
@@ -1375,6 +1442,7 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
         <span class="emp-dot" style="background:${isMe?'var(--accent)':'var(--muted)'}"></span>${empName}
       </td>`;
 
+    let woCount = 0;
     for (let d=1;d<=days;d++) {
       const code   = (row[d+1]||'WO').trim().toUpperCase() || 'WO';
       const base   = code.startsWith('WFH') ? 'WFH' : code;
@@ -1382,8 +1450,15 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
       const isTd   = d===todayD;
       const disp   = code.length>4 ? code.replace('WFH-','W-') : code;
       const extra  = editable ? `onclick="openShiftEdit(${ri},${d},'${code}','${empName}')" title="${empName} · Day ${d}: ${code}"` : `title="${code} · ${SHIFT_META[code]?.label||''}"`;
+      if (code === 'WO') woCount++;
       html += `<td class="${isWk?'wk':''} ${isTd?'td-today':''}" data-s="${base}">
         <span class="rc ${shiftClass(code)} ${editable?'editable':''}" ${extra}>${disp}</span>
+      </td>`;
+    }
+    // WO count cell — only in admin panel
+    if (editable) {
+      html += `<td class="td-wo-count" title="${empName}: ${woCount} week off${woCount!==1?'s':''} in ${selectedMonth.replace('_',' ')}">
+        <span class="wo-count-badge">${woCount}</span>
       </td>`;
     }
     html += `</tr>`;
@@ -1407,7 +1482,7 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
   const dailyCount = {};
   for (let d = 1; d <= days; d++) {
     dailyCount[d] = { MS:0, GS:0, AS:0, NS:0, WFH:0, VL:0, CL:0, SL:0, WO:0 };
-    rows.forEach(row => {
+    empRows.forEach(row => {
       const code = (row[d+1]||'WO').trim().toUpperCase();
       const base = code.startsWith('WFH') ? 'WFH' : code;
       if (dailyCount[d][base] !== undefined) dailyCount[d][base]++;
@@ -1426,6 +1501,7 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
         <span class="cnt-chip ${s.cls} ${n===0?'cnt-zero':''}">${n}</span>
       </td>`;
     }
+    if (editable) html += `<td class="td-wo-count"></td>`;
     html += `</tr>`;
   });
   html += `</tfoot></table></div>`;
@@ -2016,6 +2092,50 @@ function toggleEmpHighlight(nameTd) {
     .forEach(r => r.classList.remove('emp-hl'));
   tr.classList.add('emp-hl');
   selectedEmpRow = tr;
+}
+
+/* ══════════════════════════════════════════════════════
+   TASK 4 — Day Column Vertical Highlight
+   Click a date number in the header to highlight the
+   entire column (all rows for that day). Click again
+   or another day to switch. Works in Team Roster and
+   Admin Panel.
+══════════════════════════════════════════════════════ */
+function toggleDayHighlight(dayNum, headerTh) {
+  const table = headerTh.closest('table');
+  if (!table) return;
+
+  // If clicking the same column → deselect
+  if (selectedDayCol === dayNum) {
+    table.querySelectorAll('.col-hl').forEach(el => el.classList.remove('col-hl'));
+    selectedDayCol = null;
+    return;
+  }
+
+  // Clear previous column highlight
+  table.querySelectorAll('.col-hl').forEach(el => el.classList.remove('col-hl'));
+
+  // The day number header is at position dayNum among data <th>s (1-indexed).
+  // Highlight r-dates header
+  table.querySelectorAll('thead tr.r-dates th:not(.th-name)').forEach((th, i) => {
+    if (i + 1 === dayNum) th.classList.add('col-hl');
+  });
+  // Highlight r-dow header
+  table.querySelectorAll('thead tr.r-dow th:not(.th-name)').forEach((th, i) => {
+    if (i + 1 === dayNum) th.classList.add('col-hl');
+  });
+  // Highlight body cells — each visible row
+  table.querySelectorAll('tbody tr:not(.hidden)').forEach(tr => {
+    const dataCells = tr.querySelectorAll('td:not(.td-name)');
+    if (dataCells[dayNum - 1]) dataCells[dayNum - 1].classList.add('col-hl');
+  });
+  // Highlight tfoot cells
+  table.querySelectorAll('tfoot tr').forEach(tr => {
+    const dataCells = tr.querySelectorAll('td:not(.tf-label)');
+    if (dataCells[dayNum - 1]) dataCells[dayNum - 1].classList.add('col-hl');
+  });
+
+  selectedDayCol = dayNum;
 }
 
 /* ══════════════════════════════════════════════════════

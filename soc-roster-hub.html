@@ -56,66 +56,58 @@ body.light .month-sel { background:#eff6ff; border-color:#93c5fd; color:#0f172a;
 body.light .btn-sm { border-color:#93c5fd; color:#1e3a5f; }
 body.light .btn-sm:hover { border-color:#1d6fc4; color:#1d6fc4; }
 
-/* ── Light mode: vivid shift chip colors — each uniquely distinct ── */
-body.light .sh-MS  { background:#2563eb; color:#ffffff; font-weight:800; }
-body.light .sh-GS  { background:#059669; color:#ffffff; font-weight:800; }
-body.light .sh-AS  { background:#d97706; color:#ffffff; font-weight:800; }
-body.light .sh-NS  { background:#7c3aed; color:#ffffff; font-weight:800; }
-body.light .sh-WFH { background:#0891b2; color:#ffffff; font-weight:800; }
-body.light .sh-WO  { background:#94a3b8; color:#1e293b; font-weight:700; }
-body.light .sh-VL  { background:#e11d48; color:#ffffff; font-weight:800; }
-body.light .sh-CL  { background:#991b1b; color:#ffffff; font-weight:800; }
-body.light .sh-SL  { background:#c2410c; color:#ffffff; font-weight:800; }
-body.light .sh-CO  { background:#b45309; color:#ffffff; font-weight:800; }
-body.light .sh-GH  { background:#0d9488; color:#ffffff; font-weight:800; }
+/* ── Light mode: vivid shift chip colors ── */
+body.light .sh-MS  { background:#bfdbfe; color:#1e3a8a; font-weight:800; }
+body.light .sh-GS  { background:#bbf7d0; color:#064e3b; font-weight:800; }
+body.light .sh-AS  { background:#fed7aa; color:#7c2d12; font-weight:800; }
+body.light .sh-NS  { background:#ddd6fe; color:#3b0764; font-weight:800; }
+body.light .sh-WFH { background:#a5f3fc; color:#164e63; font-weight:800; }
+body.light .sh-WO  { background:#cbd5e1; color:#334155; font-weight:700; }
+body.light .sh-VL  { background:#fecaca; color:#7f1d1d; font-weight:800; }
+body.light .sh-CL  { background:#fecaca; color:#7f1d1d; font-weight:800; }
+body.light .sh-CO  { background:#fef08a; color:#713f12; font-weight:800; }
+body.light .sh-GH  { background:#a7f3d0; color:#064e3b; font-weight:800; }
 
 /* ── Light mode: vivid shift cell backgrounds (My Shifts grid) ── */
-/* Using solid saturated backgrounds to match the chip colors in team roster */
-body.light .bg-MS  { background:#2563eb; border:2px solid #1d4ed8; }
-body.light .bg-GS  { background:#059669; border:2px solid #047857; }
-body.light .bg-AS  { background:#d97706; border:2px solid #b45309; }
-body.light .bg-NS  { background:#7c3aed; border:2px solid #6d28d9; }
-body.light .bg-WFH { background:#0891b2; border:2px solid #0e7490; }
-body.light .bg-WO  { background:#e2e8f0; border:2px solid #94a3b8; }
-body.light .bg-VL  { background:#e11d48; border:2px solid #be123c; }
-body.light .bg-CL  { background:#991b1b; border:2px solid #7f1d1d; }
-body.light .bg-SL  { background:#c2410c; border:2px solid #9a3412; }
-body.light .bg-CO  { background:#b45309; border:2px solid #92400e; }
-body.light .bg-GH  { background:#0d9488; border:2px solid #0f766e; }
-/* text inside shift cells — pure white on colored bg, dark on light bg */
-body.light .bg-MS .code  { color:#ffffff; font-weight:900; }
-body.light .bg-GS .code  { color:#ffffff; font-weight:900; }
-body.light .bg-AS .code  { color:#ffffff; font-weight:900; }
-body.light .bg-NS .code  { color:#ffffff; font-weight:900; }
-body.light .bg-WFH .code { color:#ffffff; font-weight:900; }
-body.light .bg-WO .code  { color:#475569; font-weight:800; }
-body.light .bg-VL .code  { color:#ffffff; font-weight:900; }
-body.light .bg-CL .code  { color:#ffffff; font-weight:900; }
-body.light .bg-SL .code  { color:#ffffff; font-weight:900; }
-body.light .bg-CO .code  { color:#ffffff; font-weight:900; }
-body.light .bg-GH .code  { color:#ffffff; font-weight:900; }
-/* day number inside cell */
-body.light .sc .dn { color:rgba(255,255,255,0.7); }
-body.light .bg-WO .dn { color:rgba(71,85,105,0.6); }
-body.light .sc.today-cell .dn { color:#ffffff; font-weight:800; }
-/* time text */
-body.light .sc .tm { color:rgba(255,255,255,0.8); }
-body.light .bg-WO .tm { color:rgba(71,85,105,0.5); }
+body.light .bg-MS  { background:#bfdbfe; border-color:#93c5fd; }
+body.light .bg-GS  { background:#bbf7d0; border-color:#6ee7b7; }
+body.light .bg-AS  { background:#fed7aa; border-color:#fdba74; }
+body.light .bg-NS  { background:#ddd6fe; border-color:#c4b5fd; }
+body.light .bg-WFH { background:#a5f3fc; border-color:#67e8f9; }
+body.light .bg-WO  { background:#e2e8f0; border-color:#cbd5e1; }
+body.light .bg-VL,
+body.light .bg-CL  { background:#fecaca; border-color:#fca5a5; }
+body.light .bg-CO  { background:#fef08a; border-color:#fde047; }
+body.light .bg-GH  { background:#a7f3d0; border-color:#6ee7b7; }
+/* text inside shift cells */
+body.light .bg-MS .code  { color:#1e3a8a; }
+body.light .bg-GS .code  { color:#064e3b; }
+body.light .bg-AS .code  { color:#7c2d12; }
+body.light .bg-NS .code  { color:#3b0764; }
+body.light .bg-WFH .code { color:#164e63; }
+body.light .bg-WO .code  { color:#334155; }
+body.light .bg-VL .code,
+body.light .bg-CL .code  { color:#7f1d1d; }
+body.light .bg-CO .code  { color:#713f12; }
+body.light .bg-GH .code  { color:#064e3b; }
+body.light .sc .dn { color:rgba(15,23,42,.45); }
+body.light .sc.today-cell .dn { color:#1d6fc4; }
+
 /* ── Light mode: table ── */
-body.light table.tt tbody tr { border-bottom-color:rgba(96,165,250,.4); }
-body.light table.tt tbody tr:hover { background:rgba(29,111,196,.09); }
-body.light table.tt tbody tr.me  { background:rgba(29,111,196,.15); }
-/* Sticky name cell — keep it light on hover, never go dark */
-body.light table.tt td.td-name               { background:#eff6ff; color:#0f172a; font-weight:700; }
+body.light table.tt tbody tr { border-bottom-color:rgba(147,197,253,.5); }
+body.light table.tt tbody tr:hover { background:rgba(29,111,196,.07); }
+body.light table.tt tbody tr.me  { background:rgba(29,111,196,.12); }
+/* FIX Issue 2: sticky name cell — keep it light on hover, never go dark */
+body.light table.tt td.td-name               { background:#eff6ff; color:#0f172a; }
 body.light table.tt tbody tr:hover td.td-name { background:#dbeafe; color:#0f172a; }
 body.light table.tt tbody tr.me td.td-name   { background:#bfdbfe; color:#0f172a; }
-body.light table.tt thead tr.r-dates th      { background:#bfdbfe; color:#0f172a; font-weight:800; font-size:.75rem; }
-body.light table.tt thead tr.r-dates th.th-name { background:#bfdbfe; }
-body.light table.tt thead tr.r-dow th        { background:#dbeafe; color:#1e40af; font-weight:700; font-size:.65rem; }
-body.light table.tt thead tr.r-dow th.th-name { background:#dbeafe; }
-body.light .wk { background:rgba(96,165,250,.15); }
-body.light .td-today { background:rgba(29,111,196,.12) !important; }
-body.light .rc-WO { background:#cbd5e1; color:#1e293b; opacity:1; font-weight:700; }
+body.light table.tt thead tr.r-dates th      { background:#dbeafe; color:#1e3a5f; }
+body.light table.tt thead tr.r-dates th.th-name { background:#dbeafe; }
+body.light table.tt thead tr.r-dow th        { background:#eff6ff; color:#3b6ea5; }
+body.light table.tt thead tr.r-dow th.th-name { background:#eff6ff; }
+body.light .wk { background:rgba(147,197,253,.18); }
+body.light .td-today { background:rgba(29,111,196,.1) !important; }
+body.light .rc-WO { background:#cbd5e1; color:#334155; opacity:1; }
 
 /* ── Light mode: stat boxes, cards ── */
 body.light .stat-box { background:#eff6ff; border-color:#93c5fd; }
@@ -261,31 +253,27 @@ table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
 .rc.editable{cursor:pointer;transition:transform .1s;}
 .rc.editable:hover{transform:scale(1.15);z-index:2;position:relative;}
 
-/* ─── Shift color classes — each shift has a unique distinct color ─── */
-/* MS  — Steel blue   */ .sh-MS  {background:rgba( 59,130,246,.28);color:#93c5fd;}
-/* GS  — Emerald      */ .sh-GS  {background:rgba( 16,185,129,.28);color:#6ee7b7;}
-/* AS  — Amber        */ .sh-AS  {background:rgba(245,158, 11,.28);color:#fcd34d;}
-/* NS  — Indigo       */ .sh-NS  {background:rgba( 99, 91,255,.28);color:#c4b5fd;}
-/* WFH — Cyan (all)   */ .sh-WFH {background:rgba(  6,182,212,.22);color:#67e8f9;}
-/* WO  — Slate grey   */ .sh-WO  {background:rgba( 71, 85,105,.22);color:#94a3b8;}
-/* VL  — Rose         */ .sh-VL  {background:rgba(244, 63, 94,.28);color:#fda4af;}
-/* CL  — Dark crimson */ .sh-CL  {background:rgba(185, 28, 28,.45);color:#fca5a5;}
-/* SL  — Dark orange  */ .sh-SL  {background:rgba(194, 65,  12,.45);color:#fdba74;}
-/* CO  — Gold         */ .sh-CO  {background:rgba(234,179,  8,.28);color:#fef08a;}
-/* GH  — Teal         */ .sh-GH  {background:rgba( 20,184,166,.28);color:#5eead4;}
-
-/* shift cell background (My Shifts grid) */
-.bg-MS  {background:rgba( 59,130,246,.20);border-color:rgba( 59,130,246,.45);}
-.bg-GS  {background:rgba( 16,185,129,.20);border-color:rgba( 16,185,129,.45);}
-.bg-AS  {background:rgba(245,158, 11,.20);border-color:rgba(245,158, 11,.45);}
-.bg-NS  {background:rgba( 99, 91,255,.20);border-color:rgba( 99, 91,255,.45);}
-.bg-WFH {background:rgba(  6,182,212,.18);border-color:rgba(  6,182,212,.38);}
-.bg-WO  {background:rgba( 30, 45, 69,.38);border-color:var(--border);}
-.bg-VL  {background:rgba(244, 63, 94,.20);border-color:rgba(244, 63, 94,.45);}
-.bg-CL  {background:rgba(185, 28, 28,.40);border-color:rgba(220, 38, 38,.60);}
-.bg-SL  {background:rgba(194, 65,  12,.40);border-color:rgba(234, 88, 12,.60);}
-.bg-CO  {background:rgba(234,179,  8,.20);border-color:rgba(234,179,  8,.45);}
-.bg-GH  {background:rgba( 20,184,166,.20);border-color:rgba( 20,184,166,.45);}
+/* ─── Shift color classes ─── */
+.sh-MS    {background:rgba( 77,178,220,.22);color:#9EDBF5;}
+.sh-GS    {background:rgba( 16,185,129,.22);color:#6EDDB7;}
+.sh-AS    {background:rgba(244,162, 97,.22);color:#F8C47D;}
+.sh-NS    {background:rgba(139, 92,246,.22);color:#C4B5FD;}
+.sh-WFH   {background:rgba(  6,182,212,.18);color:#67E8F9;}
+.sh-WO    {background:rgba( 71, 85,105,.18);color:#94A3B8;}
+.sh-VL    {background:rgba(239, 68, 68,.22);color:#FCA5A5;}
+.sh-CL    {background:rgba(239, 68, 68,.22);color:#FCA5A5;}
+.sh-CO    {background:rgba(245,158, 11,.22);color:#FCD34D;}
+.sh-GH    {background:rgba( 52,211,153,.22);color:#6EE7B7;}
+/* shift cell background (my shifts grid) */
+.bg-MS    {background:rgba( 77,178,220,.18);border-color:rgba( 77,178,220,.35);}
+.bg-GS    {background:rgba( 16,185,129,.18);border-color:rgba( 16,185,129,.35);}
+.bg-AS    {background:rgba(244,162, 97,.18);border-color:rgba(244,162, 97,.35);}
+.bg-NS    {background:rgba(139, 92,246,.18);border-color:rgba(139, 92,246,.35);}
+.bg-WFH   {background:rgba(  6,182,212,.15);border-color:rgba(  6,182,212,.3);}
+.bg-WO    {background:rgba( 30, 45, 69,.35);border-color:var(--border);}
+.bg-VL,.bg-CL{background:rgba(239, 68, 68,.18);border-color:rgba(239, 68, 68,.35);}
+.bg-CO    {background:rgba(245,158, 11,.18);border-color:rgba(245, 158,11,.35);}
+.bg-GH    {background:rgba( 52,211,153,.18);border-color:rgba( 52,211,153,.35);}
 
 /* ─── Buttons ─── */
 .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.01em;}
@@ -373,89 +361,6 @@ table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
 .toggle input:checked + .toggle-slider:before{transform:translateX(18px);}
 .desync-btn{padding:7px 13px;border-radius:8px;border:1px solid rgba(239,68,68,.4);background:transparent;color:var(--red);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;}
 .desync-btn:hover{background:rgba(239,68,68,.1);}
-
-/* ─── Task 1: Server-side sync badge ─── */
-.serversync-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;}
-.serversync-badge{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:10px;font-weight:700;}
-.serversync-badge.on{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);}
-.serversync-badge.off{background:rgba(71,85,105,.15);color:var(--muted);border:1px solid var(--border);}
-.btn-serversync{padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Syne',sans-serif;font-size:.74rem;font-weight:600;cursor:pointer;transition:all .2s;}
-.btn-serversync:hover{border-color:var(--green);color:var(--green);}
-.btn-serversync.revoke{border-color:rgba(239,68,68,.4);color:var(--red);}
-.btn-serversync.revoke:hover{background:rgba(239,68,68,.08);}
-body.light .serversync-badge.on{background:rgba(4,120,87,.12);border-color:rgba(4,120,87,.3);}
-body.light .serversync-badge.off{background:rgba(51,65,85,.08);}
-body.light .btn-serversync{border-color:#93c5fd;color:#1e3a5f;}
-body.light .btn-serversync:hover{border-color:#047857;color:#047857;}
-
-/* ─── Task 2: Shift count summary tfoot ─── */
-table.tt tfoot tr{border-top:2px solid var(--border2);}
-table.tt tfoot td{padding:3px 2px;text-align:center;vertical-align:middle;}
-table.tt tfoot td.tf-label{text-align:left;padding:4px 8px 4px 14px;font-size:.6rem;font-family:'JetBrains Mono',monospace;font-weight:700;white-space:nowrap;position:sticky;left:0;background:var(--s2);z-index:5;border-right:1px solid var(--border);letter-spacing:.05em;text-transform:uppercase;color:var(--text2);}
-.cnt-chip{display:inline-flex;align-items:center;justify-content:center;width:22px;height:18px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;}
-.cnt-zero{opacity:.15;}
-body.light table.tt tfoot td.tf-label{background:#dbeafe;color:#1e3a5f;}
-body.light table.tt tfoot tr{border-top-color:#93c5fd;}
-
-/* ─── Task 3: Employee row highlight ─── */
-table.tt tbody tr.emp-hl td               {background:rgba(245,158,11,.1) !important;}
-table.tt tbody tr.emp-hl td.td-name       {background:rgba(245,158,11,.22) !important;
-                                           color:var(--yellow) !important;
-                                           /* DO NOT change font-weight or padding — causes blowout */
-                                           overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-table.tt tbody tr.emp-hl .rc              {outline:2px solid var(--yellow);outline-offset:1px;transform:scale(1.05);position:relative;z-index:1;}
-body.light table.tt tbody tr.emp-hl td    {background:rgba(180,83,9,.08) !important;}
-body.light table.tt tbody tr.emp-hl td.td-name{background:rgba(180,83,9,.18) !important;
-                                              color:#92400e !important;
-                                              overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-body.light table.tt tbody tr.emp-hl .rc   {outline-color:#b45309;}
-
-/* ─── Task 4: Day column vertical highlight ─── */
-/* td/th in highlighted column get a vivid teal wash */
-table.tt thead th.col-hl        {background:rgba(0,212,255,.30) !important;
-                                  color:var(--accent) !important;
-                                  font-weight:800;outline:2px solid var(--accent);outline-offset:-1px;}
-table.tt thead tr.r-dow th.col-hl{background:rgba(0,212,255,.18) !important;
-                                   color:var(--accent) !important;font-weight:700;}
-table.tt tbody td.col-hl        {background:rgba(0,212,255,.12) !important;}
-table.tt tfoot td.col-hl        {background:rgba(0,212,255,.18) !important;}
-/* chips inside highlighted column get cyan outline — same pattern as row highlight */
-table.tt tbody td.col-hl .rc    {outline:2px solid var(--accent);outline-offset:1px;
-                                  transform:scale(1.05);position:relative;z-index:1;}
-/* header cursor + hover */
-table.tt thead tr.r-dates th:not(.th-name){cursor:pointer;}
-table.tt thead tr.r-dates th:not(.th-name):hover{background:rgba(0,212,255,.1);}
-/* Light mode overrides */
-body.light table.tt thead th.col-hl         {background:rgba(29,111,196,.30) !important;
-                                              color:#1d4ed8 !important;
-                                              outline-color:#1d4ed8;}
-body.light table.tt thead tr.r-dow th.col-hl{background:rgba(29,111,196,.15) !important;
-                                              color:#1d4ed8 !important;}
-body.light table.tt tbody td.col-hl         {background:rgba(29,111,196,.10) !important;}
-body.light table.tt tfoot td.col-hl         {background:rgba(29,111,196,.18) !important;}
-body.light table.tt tbody td.col-hl .rc     {outline-color:#2563eb;}
-body.light table.tt thead tr.r-dates th:not(.th-name):hover{background:rgba(29,111,196,.1);}
-
-/* ─── New Task 2: WO count sticky right column (admin panel only) ─── */
-.th-wo-count{position:sticky;right:0;background:var(--s2);z-index:15;
-             font-size:.65rem;font-family:'JetBrains Mono',monospace;font-weight:700;
-             color:var(--text2);text-align:center;padding:5px 8px;
-             border-left:2px solid var(--border2);min-width:36px;white-space:nowrap;}
-.td-wo-count{position:sticky;right:0;background:var(--card);z-index:4;
-             text-align:center;padding:3px 6px;border-left:2px solid var(--border);}
-.wo-count-badge{display:inline-flex;align-items:center;justify-content:center;
-                width:24px;height:20px;border-radius:5px;font-family:'JetBrains Mono',monospace;
-                font-size:.68rem;font-weight:800;
-                background:rgba(71,85,105,.25);color:var(--text2);}
-/* highlight if the row is highlighted */
-table.tt tbody tr.emp-hl .td-wo-count .wo-count-badge{background:rgba(245,158,11,.35);color:var(--yellow);}
-/* light mode */
-body.light .th-wo-count{background:#bfdbfe;color:#1e3a5f;border-left-color:#60a5fa;}
-body.light .td-wo-count{background:#eff6ff;border-left-color:#93c5fd;}
-body.light .wo-count-badge{background:#cbd5e1;color:#334155;}
-body.light table.tt tbody tr.emp-hl .td-wo-count .wo-count-badge{background:rgba(180,83,9,.3);color:#92400e;}
-body.light table.tt tbody tr:hover .td-wo-count{background:#dbeafe;}
-body.light table.tt tbody tr.me .td-wo-count{background:#bfdbfe;}
 
 /* ─── Responsive ─── */
 @media(max-width:600px){
@@ -566,23 +471,22 @@ const DOW_MARCH2026 = [0,1,2,3,4,5,6,0,1,2,3,4,5,6,0,1,2,3,4,5,6,0,1,2,3,4,5,6,0
 const DOW_LABELS    = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 const SHIFT_META = {
-  'MS':     {bg:'rgba(59,130,246,.22)',   fg:'#93c5fd', label:'Morning Shift',       start:'07:00',end:'16:30',emoji:'🌅',allDay:false,nextDay:false},
-  'GS':     {bg:'rgba(16,185,129,.22)',   fg:'#6ee7b7', label:'General Shift',        start:'10:30',end:'20:00',emoji:'☀️',allDay:false,nextDay:false},
-  'AS':     {bg:'rgba(245,158,11,.22)',   fg:'#fcd34d', label:'Afternoon Shift',      start:'12:00',end:'21:30',emoji:'🌆',allDay:false,nextDay:false},
-  'NS':     {bg:'rgba(99,91,255,.22)',    fg:'#c4b5fd', label:'Night Shift',          start:'21:30',end:'07:00',emoji:'🌙',allDay:false,nextDay:true},
-  'WFH-MS': {bg:'rgba(6,182,212,.18)',    fg:'#67E8F9', label:'WFH – Morning',        start:'07:00',end:'16:30',emoji:'🏠',allDay:false,nextDay:false},
-  'WFH-GS': {bg:'rgba(6,182,212,.18)',    fg:'#67E8F9', label:'WFH – General',        start:'10:30',end:'20:00',emoji:'🏠',allDay:false,nextDay:false},
-  'WFH-AS': {bg:'rgba(6,182,212,.18)',    fg:'#67E8F9', label:'WFH – Afternoon',      start:'12:00',end:'21:30',emoji:'🏠',allDay:false,nextDay:false},
-  'WFH-NS': {bg:'rgba(6,182,212,.18)',    fg:'#67E8F9', label:'WFH – Night',          start:'21:30',end:'07:00',emoji:'🏠',allDay:false,nextDay:true},
-  'WO':     {bg:'rgba(71,85,105,.22)',    fg:'#94A3B8', label:'Week Off',             allDay:true},
-  'VL':     {bg:'rgba(244,63,94,.22)',    fg:'#fda4af', label:'Vacation Leave',       emoji:'🏖️',allDay:true},
-  'CL':     {bg:'rgba(185,28,28,.42)',    fg:'#fca5a5', label:'Casual Leave',         emoji:'📋',allDay:true},
-  'SL':     {bg:'rgba(194,65,12,.42)',    fg:'#fdba74', label:'Sick Leave',           emoji:'🤒',allDay:true},
-  'CO':     {bg:'rgba(234,179,8,.22)',    fg:'#fef08a', label:'Compensatory Off',     emoji:'🔄',allDay:true},
-  'GH':     {bg:'rgba(20,184,166,.22)',   fg:'#5eead4', label:'Gazetted Holiday',     emoji:'🎉',allDay:true},
+  'MS':     {bg:'rgba(77,178,220,.2)',  fg:'#9EDBF5', label:'Morning Shift',       start:'07:00',end:'16:30',emoji:'🌅',allDay:false,nextDay:false},
+  'GS':     {bg:'rgba(16,185,129,.2)', fg:'#6EDDB7', label:'General Shift',        start:'10:30',end:'20:00',emoji:'☀️',allDay:false,nextDay:false},
+  'AS':     {bg:'rgba(244,162,97,.2)', fg:'#F8C47D', label:'Afternoon Shift',      start:'12:00',end:'21:30',emoji:'🌆',allDay:false,nextDay:false},
+  'NS':     {bg:'rgba(139,92,246,.2)', fg:'#C4B5FD', label:'Night Shift',          start:'21:30',end:'07:00',emoji:'🌙',allDay:false,nextDay:true},
+  'WFH-MS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – Morning',        start:'07:00',end:'16:30',emoji:'🏠',allDay:false,nextDay:false},
+  'WFH-GS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – General',        start:'10:30',end:'20:00',emoji:'🏠',allDay:false,nextDay:false},
+  'WFH-AS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – Afternoon',      start:'12:00',end:'21:30',emoji:'🏠',allDay:false,nextDay:false},
+  'WFH-NS': {bg:'rgba(6,182,212,.18)', fg:'#67E8F9', label:'WFH – Night',          start:'21:30',end:'07:00',emoji:'🏠',allDay:false,nextDay:true},
+  'WO':     {bg:'rgba(71,85,105,.18)', fg:'#94A3B8', label:'Week Off',             allDay:true},
+  'VL':     {bg:'rgba(239,68,68,.18)', fg:'#FCA5A5', label:'Vacation Leave',       emoji:'🏖️',allDay:true},
+  'CL':     {bg:'rgba(239,68,68,.18)', fg:'#FCA5A5', label:'Casual Leave',         emoji:'📋',allDay:true},
+  'CO':     {bg:'rgba(245,158,11,.18)',fg:'#FCD34D', label:'Compensatory Off',     emoji:'🔄',allDay:true},
+  'GH':     {bg:'rgba(52,211,153,.18)',fg:'#6EE7B7', label:'Gazetted Holiday',     emoji:'🎉',allDay:true},
 };
 const ALL_CODES   = Object.keys(SHIFT_META);
-const LEAVE_CODES = ['VL','CL','SL','CO','GH'];
+const LEAVE_CODES = ['VL','CL','CO','GH'];
 const OFF_CODES   = ['WO',...LEAVE_CODES];
 
 function shiftClass(code) {
@@ -595,8 +499,6 @@ function bgClass(code) {
   if (code.startsWith('WFH')) return 'bg-WFH';
   return 'bg-' + (SHIFT_META[code] ? code : 'WO');
 }
-// Safe version for inline use inside template literals (same logic)
-function shiftClassSafe(code) { return shiftClass(code); }
 
 /* ══════════════════════════════════════════════════════
    STATE
@@ -612,10 +514,6 @@ let pendingCount = 0;
 let auditLog = [];
 let autoSyncPoller  = null;  // legacy – kept for stopAutoSyncPoller cleanup
 let uiRefreshPoller = null;  // 30-second poller: refreshes UI + auto-syncs calendar
-let isSyncing       = false; // mutex — prevents concurrent calendar syncs (duplicate events)
-let codeClient      = null;  // Task 1: GIS code client for offline auth code flow
-let selectedEmpRow  = null;  // Task 3: currently highlighted employee <tr>
-let selectedDayCol  = null;  // Task 4: currently highlighted day column (1-based)
 
 /* ══════════════════════════════════════════════════════
    AUTH
@@ -629,14 +527,6 @@ window.addEventListener('load', () => {
         client_id: CLIENT_ID,
         scope: SCOPES,
         callback: handleToken
-      });
-
-      // Task 1: code client for one-time offline access (gets refresh_token)
-      codeClient = google.accounts.oauth2.initCodeClient({
-        client_id: CLIENT_ID,
-        scope: 'openid email profile https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar',
-        ux_mode: 'popup',
-        callback: handleAuthCode
       });
 
       // Try to restore session from sessionStorage
@@ -800,8 +690,9 @@ async function initApp() {
     `<option value="${m}" ${m === selectedMonth ? 'selected' : ''}>${m.replace('_',' ')}</option>`
   ).join('');
 
-  // Load Employee_Master — range extended to F200 to support any team size
-  const empRows = await sheetsRead('Employee_Master!A3:F200');
+  // Load Employee_Master
+  showLoading('Loading employee data…');
+  const empRows = await sheetsRead('Employee_Master!A3:F25');
   employeeMaster = empRows
     .filter(r => r[1])
     .map(r => ({
@@ -831,9 +722,6 @@ async function initApp() {
   // Load first tab
   await loadMyShifts();
   if (isAdmin) checkPendingRequests();
-
-  // Task 1: check if server-side sync is already enabled for this user
-  checkServerSyncStatus();
 
   // ── Start the unified 30-second poller (always on while logged in) ─────────
   // Handles both: (1) auto-refresh UI when admin makes a change,
@@ -879,9 +767,7 @@ async function getRoster(month) {
   if (rosterCache[month]) return rosterCache[month];
   const days = getDaysInMonth(month);
   const lastCol = colLetter(days + 2);
-  // !! CRITICAL FIX: was hardcoded to row 22 (max 18 employees).
-  // Extended to row 200 so any number of employees is supported.
-  const rows = await sheetsRead(`${month}!A4:${lastCol}200`);
+  const rows = await sheetsRead(`${month}!A4:${lastCol}22`);
   rosterCache[month] = rows;
   return rows;
 }
@@ -925,8 +811,6 @@ function switchTab(id, btn) {
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
   activeTab = id;
-  selectedEmpRow = null; // Task 3: clear highlight on tab switch
-  selectedDayCol = null; // Task 4: clear column highlight on tab switch
 
   if (id === 'my-shifts')    loadMyShifts();
   if (id === 'team-roster')  loadTeamRoster();
@@ -934,10 +818,8 @@ function switchTab(id, btn) {
 }
 
 async function onMonthChange(month) {
-  selectedMonth  = month;
-  selectedEmpRow = null; // Task 3: clear highlight on month change
-  selectedDayCol = null; // Task 4: clear column highlight on month change
-  rosterCache    = {};   // clear cache so fresh data loads
+  selectedMonth = month;
+  rosterCache = {};   // clear cache so fresh data loads
   if (activeTab === 'my-shifts')   await loadMyShifts();
   if (activeTab === 'team-roster') await loadTeamRoster();
   if (activeTab === 'admin-panel') await loadAdminPanel();
@@ -988,37 +870,30 @@ async function loadMyShifts() {
           </div>
           <button class="desync-btn" onclick="openDesyncModal()">🗑️ De-sync</button>
         </div>
-        <div class="serversync-row">
-          <span id="serversync-badge" class="serversync-badge off">⚡ Background Sync: OFF</span>
-          <button id="serversync-btn" class="btn-serversync" onclick="enableServerSync()">Enable Background Sync</button>
-          <span style="font-size:.68rem;color:var(--muted);font-family:'JetBrains Mono',monospace">Calendar syncs even when you're offline</span>
-        </div>
         <div class="cal-info" id="last-sync-info"></div>
       </div>
     </div>
 
     <div class="stat-row">
-      <div class="stat-box"><div class="n" style="color:#93c5fd">${cnt['MS']||0}</div><div class="l">Morning</div></div>
-      <div class="stat-box"><div class="n" style="color:#6ee7b7">${cnt['GS']||0}</div><div class="l">General</div></div>
-      <div class="stat-box"><div class="n" style="color:#fcd34d">${cnt['AS']||0}</div><div class="l">Afternoon</div></div>
-      <div class="stat-box"><div class="n" style="color:#c4b5fd">${cnt['NS']||0}</div><div class="l">Night</div></div>
+      <div class="stat-box"><div class="n" style="color:#9EDBF5">${cnt['MS']||0}</div><div class="l">Morning</div></div>
+      <div class="stat-box"><div class="n" style="color:#6EDDB7">${cnt['GS']||0}</div><div class="l">General</div></div>
+      <div class="stat-box"><div class="n" style="color:#F8C47D">${cnt['AS']||0}</div><div class="l">Afternoon</div></div>
+      <div class="stat-box"><div class="n" style="color:#C4B5FD">${cnt['NS']||0}</div><div class="l">Night</div></div>
       <div class="stat-box"><div class="n" style="color:#67E8F9">${(cnt['WFH-MS']||0)+(cnt['WFH-GS']||0)+(cnt['WFH-AS']||0)+(cnt['WFH-NS']||0)}</div><div class="l">WFH</div></div>
-      <div class="stat-box"><div class="n" style="color:#fda4af">${LEAVE_CODES.reduce((s,c)=>s+(cnt[c]||0),0)}</div><div class="l">Leaves</div></div>
+      <div class="stat-box"><div class="n" style="color:#FCA5A5">${LEAVE_CODES.reduce((s,c)=>s+(cnt[c]||0),0)}</div><div class="l">Leaves</div></div>
     </div>
 
     <div class="card" style="margin-bottom:16px">
       <div class="shift-legend">
-        <div class="leg"><div class="leg-dot" style="background:#93c5fd"></div>MS</div>
-        <div class="leg"><div class="leg-dot" style="background:#6ee7b7"></div>GS</div>
-        <div class="leg"><div class="leg-dot" style="background:#fcd34d"></div>AS</div>
-        <div class="leg"><div class="leg-dot" style="background:#c4b5fd"></div>NS</div>
+        <div class="leg"><div class="leg-dot" style="background:#9EDBF5"></div>MS</div>
+        <div class="leg"><div class="leg-dot" style="background:#6EDDB7"></div>GS</div>
+        <div class="leg"><div class="leg-dot" style="background:#F8C47D"></div>AS</div>
+        <div class="leg"><div class="leg-dot" style="background:#C4B5FD"></div>NS</div>
         <div class="leg"><div class="leg-dot" style="background:#67E8F9"></div>WFH</div>
         <div class="leg"><div class="leg-dot" style="background:#94A3B8"></div>WO</div>
-        <div class="leg"><div class="leg-dot" style="background:#fda4af"></div>VL</div>
-        <div class="leg"><div class="leg-dot" style="background:#fca5a5"></div>CL</div>
-        <div class="leg"><div class="leg-dot" style="background:#fdba74"></div>SL</div>
-        <div class="leg"><div class="leg-dot" style="background:#fef08a"></div>CO</div>
-        <div class="leg"><div class="leg-dot" style="background:#5eead4"></div>GH</div>
+        <div class="leg"><div class="leg-dot" style="background:#FCA5A5"></div>Leave</div>
+        <div class="leg"><div class="leg-dot" style="background:#FCD34D"></div>CO</div>
+        <div class="leg"><div class="leg-dot" style="background:#6EE7B7"></div>GH</div>
       </div>
 
       <div class="sg-wrap"><div class="sg" id="my-sg">`;
@@ -1228,16 +1103,6 @@ async function deleteAllEventsInMonth(calendarId, ym) {
    onProgress(done, total, msg) is optional — called after each event created.
 ──────────────────────────────────────────────────────────────────────────── */
 async function syncCalendarHeadless(onProgress) {
-  // ── Mutex: only one sync can run at a time ──────────────────────────────────
-  if (isSyncing) {
-    console.log('[Sync] Already running — skipping concurrent call');
-    return null;
-  }
-  isSyncing = true;
-  // Pre-stamp so the poller won't launch a second sync while this one runs
-  localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
-
-  try {
   const rows   = await getRoster(selectedMonth);
   const myIdx  = findMyRow(rows);
   if (myIdx === -1) throw new Error('Your row not found in roster');
@@ -1284,7 +1149,7 @@ async function syncCalendarHeadless(onProgress) {
         start:     { dateTime: startDT, timeZone: 'Asia/Kolkata' },
         end:       { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
         colorId,
-        reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] }
+        reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 120 }] }
       };
     } else {
       done++; continue;
@@ -1299,12 +1164,10 @@ async function syncCalendarHeadless(onProgress) {
     await new Promise(r => setTimeout(r, 50));
   }
 
-  localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
+  // Stamp the sync time so the poller won't re-fire until admin makes another change
+  const syncTime = new Date().toISOString();
+  localStorage.setItem('soc_last_sync_' + userEmail, syncTime);
   return { synced: done, total: workDays.length, totalDays: days };
-
-  } finally {
-    isSyncing = false; // always release mutex even on error
-  }
 }
 
 /* ── syncCalendar — UI-facing wrapper around syncCalendarHeadless ─────────── */
@@ -1377,14 +1240,11 @@ async function loadTeamRoster() {
 }
 
 function renderTeamTable(el, rows, days, dow, todayD, editable) {
-  // ── Task 1 fix: filter out any sheet row where column B (Name) is blank ──
-  // Row 4 in the sheet is a day-label header row with no employee name.
-  const empRows = rows.filter(r => r[1]?.toString().trim());
-  if (!empRows.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><p>No roster data found for this month.</p></div>`; return; }
+  if (!rows.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><p>No roster data found for this month.</p></div>`; return; }
 
   // Count totals per shift type
   const totals = {};
-  empRows.forEach(row => {
+  rows.forEach(row => {
     for (let d=1;d<=days;d++) {
       const code = (row[d+1]||'WO').trim().toUpperCase();
       const base = code.startsWith('WFH') ? 'WFH' : code;
@@ -1395,7 +1255,7 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
   let html = `
   <div class="sec-hdr">
     <div><h2>👥 ${selectedMonth.replace('_',' ')} — Team Roster</h2>
-    <p>${empRows.length} employees</p></div>
+    <p>${rows.length} employees</p></div>
   </div>
 
   <div class="toolbar">
@@ -1421,28 +1281,22 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
   for (let d=1;d<=days;d++) {
     const isWk = dow[d-1]===0||dow[d-1]===6;
     const isTd = d===todayD;
-    html += `<th class="${isWk?'wk':''}" data-col="${d}" onclick="toggleDayHighlight(${d},this)" style="${isTd?'outline:1px solid var(--accent);':''};cursor:pointer" title="Click to highlight column">${d}</th>`;
+    html += `<th class="${isWk?'wk':''}" style="${isTd?'outline:1px solid var(--accent);':''}">${d}</th>`;
   }
-  // WO count header — only show in admin panel (editable=true)
-  if (editable) html += `<th class="th-wo-count" title="Total Week Offs this month">WO</th>`;
 
   html += `</tr><tr class="r-dow"><th class="th-name"></th>`;
   for (let d=1;d<=days;d++) {
     const isWk = dow[d-1]===0||dow[d-1]===6;
     html += `<th class="${isWk?'wk':''}">${DOW_LABELS[dow[d-1]].slice(0,2)}</th>`;
   }
-  if (editable) html += `<th class="th-wo-count"></th>`;
   html += `</tr></thead><tbody>`;
 
-  empRows.forEach((row, ri) => {
+  rows.forEach((row, ri) => {
     const empName = row[1]?.trim() || '';
     const isMe    = empName.toLowerCase() === userName?.toLowerCase();
     html += `<tr class="${isMe?'me':''}" data-n="${empName.toLowerCase()}">
-      <td class="td-name" onclick="toggleEmpHighlight(this)" style="cursor:pointer" title="Click to highlight row">
-        <span class="emp-dot" style="background:${isMe?'var(--accent)':'var(--muted)'}"></span>${empName}
-      </td>`;
+      <td class="td-name"><span class="emp-dot" style="background:${isMe?'var(--accent)':'var(--muted)'}"></span>${empName}</td>`;
 
-    let woCount = 0;
     for (let d=1;d<=days;d++) {
       const code   = (row[d+1]||'WO').trim().toUpperCase() || 'WO';
       const base   = code.startsWith('WFH') ? 'WFH' : code;
@@ -1450,61 +1304,14 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
       const isTd   = d===todayD;
       const disp   = code.length>4 ? code.replace('WFH-','W-') : code;
       const extra  = editable ? `onclick="openShiftEdit(${ri},${d},'${code}','${empName}')" title="${empName} · Day ${d}: ${code}"` : `title="${code} · ${SHIFT_META[code]?.label||''}"`;
-      if (code === 'WO') woCount++;
       html += `<td class="${isWk?'wk':''} ${isTd?'td-today':''}" data-s="${base}">
         <span class="rc ${shiftClass(code)} ${editable?'editable':''}" ${extra}>${disp}</span>
       </td>`;
     }
-    // WO count cell — only in admin panel
-    if (editable) {
-      html += `<td class="td-wo-count" title="${empName}: ${woCount} week off${woCount!==1?'s':''} in ${selectedMonth.replace('_',' ')}">
-        <span class="wo-count-badge">${woCount}</span>
-      </td>`;
-    }
     html += `</tr>`;
   });
 
-  // ── TASK 2: tfoot shift-count summary ──────────────────────────────────────
-  // Compute per-day counts for each displayed shift type
-  const SUMMARY_SHIFTS = [
-    { key:'MS',  cls:'sh-MS',  label:'MS'  },
-    { key:'GS',  cls:'sh-GS',  label:'GS'  },
-    { key:'AS',  cls:'sh-AS',  label:'AS'  },
-    { key:'NS',  cls:'sh-NS',  label:'NS'  },
-    { key:'WFH', cls:'sh-WFH', label:'WFH' },
-    { key:'VL',  cls:'sh-VL',  label:'VL'  },
-    { key:'CL',  cls:'sh-CL',  label:'CL'  },
-    { key:'SL',  cls:'sh-SL',  label:'SL'  },
-    { key:'WO',  cls:'sh-WO',  label:'WO'  },
-  ];
-
-  // Build dailyCount[day][shiftKey] = n
-  const dailyCount = {};
-  for (let d = 1; d <= days; d++) {
-    dailyCount[d] = { MS:0, GS:0, AS:0, NS:0, WFH:0, VL:0, CL:0, SL:0, WO:0 };
-    empRows.forEach(row => {
-      const code = (row[d+1]||'WO').trim().toUpperCase();
-      const base = code.startsWith('WFH') ? 'WFH' : code;
-      if (dailyCount[d][base] !== undefined) dailyCount[d][base]++;
-      else dailyCount[d]['WO']++;
-    });
-  }
-
-  html += `</tbody><tfoot>`;
-  SUMMARY_SHIFTS.forEach(s => {
-    html += `<tr><td class="tf-label">${s.label}</td>`;
-    for (let d = 1; d <= days; d++) {
-      const n    = dailyCount[d][s.key] || 0;
-      const isWk = dow[d-1]===0||dow[d-1]===6;
-      const isTd = d===todayD;
-      html += `<td class="${isWk?'wk':''} ${isTd?'td-today':''}">
-        <span class="cnt-chip ${s.cls} ${n===0?'cnt-zero':''}">${n}</span>
-      </td>`;
-    }
-    if (editable) html += `<td class="td-wo-count"></td>`;
-    html += `</tr>`;
-  });
-  html += `</tfoot></table></div>`;
+  html += `</tbody></table></div>`;
 
   el.innerHTML = html;
   activeFilter = 'ALL';
@@ -1596,36 +1403,25 @@ async function loadAdminPanel() {
 
     html += `</div></div>
 
-    <!-- Section C: Audit Log — latest 50 changes, scrollable -->
+    <!-- Section C: Audit Log -->
     <div class="admin-section">
-      <h3>📜 Recent Changes <span style="font-size:.7rem;font-weight:500;color:var(--muted)">(last 50 · ${selectedMonth.replace('_',' ')} & all months)</span></h3>
-      <div class="card" id="audit-log-body" style="max-height:340px;overflow-y:auto;padding:0;">`;
+      <h3>📜 Recent Changes</h3>
+      <div class="card">`;
 
-    const latest50 = logRows.slice().reverse().slice(0, 50);
-
-    if (!latest50.length) {
-      html += `<p style="font-size:.8rem;color:var(--muted);padding:16px">No changes recorded yet.</p>`;
+    const all = logRows.slice().reverse().slice(0,20);
+    if (!all.length) {
+      html += `<p style="font-size:.8rem;color:var(--muted)">No changes recorded yet.</p>`;
     } else {
-      html += `<div style="padding:4px 0">`;
-      latest50.forEach(r => {
+      all.forEach(r => {
         const rStatus = r[10] || r[9] || 'Pending';
         const statusColor = rStatus==='Approved'?'var(--green)':rStatus==='Rejected'?'var(--red)':'var(--yellow)';
-        const monthTag = (r[4]||r[2]||'').toString().trim();
-        const origShift = r[7]||r[6]||'—';
-        const newShift  = r[8]||r[7]||'—';
-        html += `<div class="audit-row" data-month="${monthTag}" style="padding:8px 16px">
+        html += `<div class="audit-row">
           <div class="audit-time">${r[1]||'—'} · ${r[2]||''}</div>
-          <div style="flex:1"><strong>${r[3]}</strong>
-            <span style="color:var(--muted);font-size:.72rem;margin-left:4px">${r[5]||r[4]||''}</span>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;margin-left:4px">
-              <span class="rc ${shiftClassSafe(origShift)}" style="display:inline-flex;width:auto;padding:0 5px">${origShift}</span>
-              → <span class="rc ${shiftClassSafe(newShift)}" style="display:inline-flex;width:auto;padding:0 5px">${newShift}</span>
-            </span>
-          </div>
-          <span style="color:${statusColor};font-size:.72rem;font-family:'JetBrains Mono',monospace;white-space:nowrap">${rStatus}</span>
+          <div style="flex:1"><strong>${r[3]}</strong> · ${r[4]} · ${r[5]}
+            <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem"> ${r[6]}→${r[7]}</span></div>
+          <span style="color:${statusColor};font-size:.72rem;font-family:'JetBrains Mono',monospace">${rStatus}</span>
         </div>`;
       });
-      html += `</div>`;
     }
 
     html += `</div></div>`;
@@ -1740,36 +1536,6 @@ async function processRequest(localIdx, action, reqId, empName, dateStr, newCode
   }
 }
 
-// ── Task 3: Toggle audit log between current-month and all-months view ─────────
-function toggleAuditAll(showAll) {
-  const body = document.getElementById('audit-log-body');
-  if (!body) return;
-  const currentMonthLabel = selectedMonth.replace('_', ' ');
-  body.querySelectorAll('.audit-row').forEach(row => {
-    const rowMonth = (row.dataset.month || '').trim();
-    if (showAll) {
-      row.style.display = '';  // show all rows
-    } else {
-      row.style.display = (rowMonth === currentMonthLabel) ? '' : 'none';
-    }
-  });
-  // Show "no entries" message if nothing visible
-  const visible = Array.from(body.querySelectorAll('.audit-row'))
-    .filter(r => r.style.display !== 'none');
-  let noMsg = body.querySelector('.audit-no-msg');
-  if (!visible.length) {
-    if (!noMsg) {
-      noMsg = document.createElement('p');
-      noMsg.className = 'audit-no-msg';
-      noMsg.style.cssText = 'font-size:.8rem;color:var(--muted)';
-      noMsg.textContent = showAll ? 'No changes recorded yet.' : `No changes recorded for ${currentMonthLabel} yet.`;
-      body.appendChild(noMsg);
-    }
-  } else if (noMsg) {
-    noMsg.remove();
-  }
-}
-
 /* ══════════════════════════════════════════════════════
    MODAL
 ══════════════════════════════════════════════════════ */
@@ -1800,8 +1566,7 @@ function loadAutoSyncPref() {
     updateAutoSyncLabel(pref);
   }
   updateLastSyncLabel();
-  // Reflect current server-sync status in the badge (re-check each time tab renders)
-  checkServerSyncStatus();
+  // Note: the unified UI refresh poller is started by initApp() — no separate start needed here.
 }
 
 function updateAutoSyncLabel(on) {
@@ -2072,159 +1837,6 @@ async function doDesync(scope) {
   }
 
   if (btn) { btn.disabled = false; btn.textContent = '📅 Sync to SOC Calendar'; }
-}
-
-/* ══════════════════════════════════════════════════════
-   TASK 3 — Employee Row Highlight
-   Click any name cell to highlight the entire row.
-   Click again or a different name to change selection.
-══════════════════════════════════════════════════════ */
-function toggleEmpHighlight(nameTd) {
-  const tr = nameTd.closest('tr');
-  // Deselect if clicking the already-selected row
-  if (selectedEmpRow === tr) {
-    tr.classList.remove('emp-hl');
-    selectedEmpRow = null;
-    return;
-  }
-  // Clear any existing highlight across all tables
-  document.querySelectorAll('table.tt tbody tr.emp-hl')
-    .forEach(r => r.classList.remove('emp-hl'));
-  tr.classList.add('emp-hl');
-  selectedEmpRow = tr;
-}
-
-/* ══════════════════════════════════════════════════════
-   TASK 4 — Day Column Vertical Highlight
-   Click a date number in the header to highlight the
-   entire column (all rows for that day). Click again
-   or another day to switch. Works in Team Roster and
-   Admin Panel.
-══════════════════════════════════════════════════════ */
-function toggleDayHighlight(dayNum, headerTh) {
-  const table = headerTh.closest('table');
-  if (!table) return;
-
-  // If clicking the same column → deselect
-  if (selectedDayCol === dayNum) {
-    table.querySelectorAll('.col-hl').forEach(el => el.classList.remove('col-hl'));
-    selectedDayCol = null;
-    return;
-  }
-
-  // Clear previous column highlight
-  table.querySelectorAll('.col-hl').forEach(el => el.classList.remove('col-hl'));
-
-  // The day number header is at position dayNum among data <th>s (1-indexed).
-  // Highlight r-dates header
-  table.querySelectorAll('thead tr.r-dates th:not(.th-name)').forEach((th, i) => {
-    if (i + 1 === dayNum) th.classList.add('col-hl');
-  });
-  // Highlight r-dow header
-  table.querySelectorAll('thead tr.r-dow th:not(.th-name)').forEach((th, i) => {
-    if (i + 1 === dayNum) th.classList.add('col-hl');
-  });
-  // Highlight body cells — each visible row
-  table.querySelectorAll('tbody tr:not(.hidden)').forEach(tr => {
-    const dataCells = tr.querySelectorAll('td:not(.td-name)');
-    if (dataCells[dayNum - 1]) dataCells[dayNum - 1].classList.add('col-hl');
-  });
-  // Highlight tfoot cells
-  table.querySelectorAll('tfoot tr').forEach(tr => {
-    const dataCells = tr.querySelectorAll('td:not(.tf-label)');
-    if (dataCells[dayNum - 1]) dataCells[dayNum - 1].classList.add('col-hl');
-  });
-
-  selectedDayCol = dayNum;
-}
-
-/* ══════════════════════════════════════════════════════
-   TASK 1 — Server-Side Calendar Sync
-   One-time setup stores a refresh_token in Cloudflare KV
-   via the Worker. After that, every admin shift edit
-   triggers a direct server→calendar sync — no browser needed.
-
-   SETUP REQUIRED IN CLOUDFLARE (one-time):
-     1. Create KV namespace "SOC_TOKENS" in Cloudflare dashboard
-     2. In wrangler.toml: [[kv_namespaces]] binding="SOC_TOKENS" id="<id>"
-     3. Add env vars: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
-══════════════════════════════════════════════════════ */
-
-// Called on login — updates badge to show if KV token already exists
-async function checkServerSyncStatus() {
-  try {
-    const result = await callAppsScript({ action: 'checkServerSync' });
-    updateServerSyncUI(result.enabled === true);
-  } catch(e) {
-    console.warn('[ServerSync] status check failed:', e.message);
-  }
-}
-
-// Update the badge + button to reflect current state
-function updateServerSyncUI(enabled) {
-  const badge = document.getElementById('serversync-badge');
-  const btn   = document.getElementById('serversync-btn');
-  if (!badge || !btn) return;
-  if (enabled) {
-    badge.className   = 'serversync-badge on';
-    badge.textContent = '⚡ Background Sync: ON';
-    btn.textContent   = 'Revoke';
-    btn.className     = 'btn-serversync revoke';
-    btn.onclick       = revokeServerSync;
-  } else {
-    badge.className   = 'serversync-badge off';
-    badge.textContent = '⚡ Background Sync: OFF';
-    btn.textContent   = 'Enable Background Sync';
-    btn.className     = 'btn-serversync';
-    btn.onclick       = enableServerSync;
-  }
-}
-
-// Kick off the one-time offline OAuth code flow
-function enableServerSync() {
-  if (!codeClient) { showToast('⚠️ Google API not ready, please retry in a moment'); return; }
-  showToast('🔐 Opening Google consent — please approve calendar access…');
-  // prompt=consent forces Google to return refresh_token even if previously granted
-  codeClient.requestCode();
-}
-
-// Called by GIS after the user approves the consent screen
-async function handleAuthCode(resp) {
-  if (resp.error) {
-    showToast('❌ Background sync cancelled: ' + resp.error);
-    return;
-  }
-  const badge = document.getElementById('serversync-badge');
-  const btn   = document.getElementById('serversync-btn');
-  if (badge) { badge.textContent = '⏳ Storing token…'; }
-  if (btn)   { btn.disabled = true; btn.textContent = 'Setting up…'; }
-
-  try {
-    const result = await callAppsScript({ action: 'storeRefreshToken', code: resp.code });
-    if (!result.ok && result.error === 'no_refresh_token') {
-      showToast('⚠️ Google did not return a refresh token. Revoke app access at myaccount.google.com/permissions and try again.');
-      updateServerSyncUI(false);
-      if (btn) btn.disabled = false;
-      return;
-    }
-    showToast('✅ Background sync enabled! Calendar will update even when you\'re offline.');
-    updateServerSyncUI(true);
-  } catch(e) {
-    showToast('❌ Failed to enable background sync: ' + e.message);
-    updateServerSyncUI(false);
-    if (btn) btn.disabled = false;
-  }
-}
-
-// Remove the stored token from KV
-async function revokeServerSync() {
-  try {
-    await callAppsScript({ action: 'revokeServerSync' });
-    showToast('🗑️ Background sync revoked — calendar will only sync when you\'re logged in.');
-    updateServerSyncUI(false);
-  } catch(e) {
-    showToast('❌ Revoke failed: ' + e.message);
-  }
 }
 
 function showToast(msg) {

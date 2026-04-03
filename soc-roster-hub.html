@@ -550,8 +550,7 @@ body.light table.tt tbody tr.me .td-wo-count{background:#bfdbfe;}
    CONFIG
 ══════════════════════════════════════════════════════ */
 const SHEET_ID       = '1MY9aFaaUdSmqUP2V3gXt0emNMONlubgOfVqoV2mLpoY';
-const APPS_SCRIPT_URL        = 'https://soc-roster-proxy.navoneel-itorizin-87e.workers.dev';
-const APPS_SCRIPT_DIRECT_URL = 'https://script.google.com/macros/s/AKfycbwzTEP_jg_N7qQ7g7MgMJi_-mHIT_mcXMIdTyo_G8k1MOavuu0uIh1ziaXs4q7d8n53rg/exec';
+const APPS_SCRIPT_URL = 'https://soc-roster-proxy.navoneel-itorizin-87e.workers.dev';
 const CLIENT_ID   = '135332498104-1jlvua53i6ujahtov3enj1och1ln3o0o.apps.googleusercontent.com';
 const ADMIN_EMAIL = 'navoneel.itorizin@gmail.com';
 const SCOPES      = 'openid email profile https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar';
@@ -769,26 +768,6 @@ async function callAppsScript(payload) {
   const data = await resp.json();
   if (!data.ok) throw new Error(data.error || 'Worker error');
   return data;
-}
-
-// ── Direct Apps Script caller — fire-and-forget for email notifications ──
-// Uses GET + no-cors so CORS preflight is never triggered.
-// Errors are silently swallowed — email failure never blocks main actions.
-async function callAppsScriptDirect(payload) {
-  try {
-    const url = new URL(APPS_SCRIPT_DIRECT_URL);
-    url.searchParams.set('payload', JSON.stringify(payload));
-    await fetch(url.toString(), { method: 'GET', mode: 'no-cors' });
-  } catch(e) {
-    console.warn('[Email] Notification skipped:', e.message);
-  }
-}
-
-// ── Look up employee email from the in-memory employeeMaster list ──
-function getEmpEmailFromMaster(empName) {
-  if (!empName) return null;
-  const rec = employeeMaster.find(e => e.name?.toLowerCase() === empName.toLowerCase());
-  return rec?.email || null;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1137,7 +1116,7 @@ async function submitLeaveRequest(dayKey, currentCode, empName, dateStr) {
   const notes   = document.getElementById('req-notes').value;
 
   try {
-    const submitResult = await callAppsScript({
+    await callAppsScript({
       action:        'submitRequest',
       month:         selectedMonth.replace('_', ' '),
       empName:       empName,
@@ -1152,20 +1131,6 @@ async function submitLeaveRequest(dayKey, currentCode, empName, dateStr) {
     showToast('✅ Request submitted — pending admin approval');
     leaveLogCache = null;
     if (isAdmin) checkPendingRequests();
-    // ── Email: confirmation to employee + notification to admins ──────────────
-    callAppsScriptDirect({
-      action:        'emailNotify',
-      scenario:      'submitRequest',
-      reqId:         submitResult.reqId || '',
-      empEmail:      userEmail,
-      empName:       empName,
-      reqType:       type,
-      month:         selectedMonth.replace('_', ' '),
-      dateAffected:  dateStr,
-      originalShift: currentCode,
-      newShift:      newCode,
-      swapPartner:   type === 'Shift Swap' ? partner : '—'
-    });
     // Note: auto-sync is handled by the poller after admin approves the request
   } catch(e) {
     alert('Failed to submit request: ' + e.message);
@@ -1228,8 +1193,13 @@ async function getOrCreateSocCalendar() {
 
 async function deleteAllEventsInMonth(calendarId, ym) {
   const [year, mo] = ym.split('-').map(Number);
-  const tMin = `${ym}-01T00:00:00Z`;
-  const tMax = `${year}-${String(mo < 12 ? mo+1 : 1).padStart(2,'0')}-01T00:00:00Z`;
+  // Extend tMin 6 hours before month start to catch IST-offset events
+  // (IST = UTC+5:30, so midnight IST = 18:30 UTC previous day)
+  const prevDay  = new Date(Date.UTC(year, mo - 1, 1) - 6 * 3600000);
+  const tMin     = prevDay.toISOString();
+  const nextMonthYear = mo < 12 ? year : year + 1;
+  const nextMonthMo   = mo < 12 ? mo + 1 : 1;
+  const tMax = `${nextMonthYear}-${String(nextMonthMo).padStart(2,'0')}-01T00:00:00Z`;
 
   let pageToken = null;
   let deleted   = 0;
@@ -1263,8 +1233,9 @@ async function syncCalendarHeadless(onProgress) {
     return null;
   }
   isSyncing = true;
-  // Pre-stamp so the poller won't launch a second sync while this one runs
-  localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
+  // NOTE: do NOT pre-stamp soc_last_sync_ here — if sync fails, the pre-stamp
+  // would make the poller think everything is up to date and never retry.
+  // The stamp happens only on SUCCESS at the end of this function.
 
   try {
   const rows   = await getRoster(selectedMonth);
@@ -1279,45 +1250,52 @@ async function syncCalendarHeadless(onProgress) {
   const calendarId = await getOrCreateSocCalendar();
   await deleteAllEventsInMonth(calendarId, ym);
 
-  // Include ALL days — working shifts, leaves, comp-offs, AND week offs.
-  // Previously OFF_CODES filter removed WO+leaves before the LEAVE_CODES check
-  // ever ran — that was a bug that made leave events unreachable dead code.
-  const allDays = Object.entries(myShifts); // 01…31
+  // Iterate ALL days: working shifts + WO + leaves.
+  // IMPORTANT: GH (Gazetted Holiday) is SKIPPED because these already appear
+  // in the user's subscribed India holidays calendar — creating them again
+  // would show every national holiday TWICE in Google Calendar.
+  const allDays = Object.entries(myShifts);
   const total   = allDays.length;
   let done = 0;
+
+  // Helper: next calendar date string (all-day events need exclusive end date)
+  function nextDate(ymStr, keyStr) {
+    const d = new Date(ymStr + '-' + keyStr + 'T00:00:00');
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().slice(0, 10);
+  }
 
   for (const [key, code] of allDays) {
     const d    = parseInt(key);
     const meta = SHIFT_META[code] || SHIFT_META['WO'];
     let eventBody;
 
-    if (code === 'WO') {
-      // ── Week Off: all-day event, graphite, no reminder ───────────────────
+    if (code === 'GH') {
+      // Skip: Gazetted Holidays already appear from Google's India holidays calendar
+      done++; continue;
+    } else if (code === 'WO') {
+      // All-day Week Off — end must be start + 1 day (Google Calendar requirement)
       eventBody = {
-        summary:     '🔴 Week Off – SOC',
-        start:       { date: `${ym}-${key}` },
-        end:         { date: `${ym}-${key}` },
-        colorId:     '8',   // graphite
+        summary:     '🔴 Week Off',
         description: 'Week Off — no shift today',
+        start:       { date: `${ym}-${key}` },
+        end:         { date: nextDate(ym, key) },
+        colorId:     '8',
         reminders:   { useDefault: false }
       };
     } else if (LEAVE_CODES.includes(code)) {
-      // ── Leave / Comp-off / Holiday: all-day, coloured, no reminder ───────
-      const leaveColorMap = {
-        'VL': '11', 'CL': '11', 'SL': '11',  // red (Tomato)
-        'CO': '5',                              // yellow (Banana)
-        'GH': '2'                               // green (Sage)
-      };
+      // All-day leave — end must be start + 1 day
+      const leaveColorMap = { 'VL':'11', 'CL':'11', 'SL':'11', 'CO':'5' };
       eventBody = {
-        summary:     `${meta.emoji || '📋'} ${meta.label} – SOC`,
-        start:       { date: `${ym}-${key}` },
-        end:         { date: `${ym}-${key}` },
-        colorId:     leaveColorMap[code] || '11',
+        summary:     `${meta.emoji || '📋'} ${meta.label}`,
         description: `${meta.label} — SOC Roster`,
+        start:       { date: `${ym}-${key}` },
+        end:         { date: nextDate(ym, key) },
+        colorId:     leaveColorMap[code] || '11',
         reminders:   { useDefault: false }
       };
     } else if (!meta.allDay && meta.start) {
-      // ── Working shift: timed event, 2-hour popup reminder ─────────────────
+      // Timed working shift — 2-hour reminder
       const dateStr = `${ym}-${key}`;
       const startDT = `${dateStr}T${meta.start}:00+05:30`;
       let endDT;
@@ -1331,8 +1309,8 @@ async function syncCalendarHeadless(onProgress) {
       const colorId = code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':
                       code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
       eventBody = {
-        summary:     `${meta.emoji} ${meta.label} – SOC`,
-        description: `${meta.start} – ${meta.end} IST · SOC Roster`,
+        summary:     `${meta.emoji} ${meta.label}`,
+        description: `${meta.start} – ${meta.end} IST`,
         start:       { dateTime: startDT, timeZone: 'Asia/Kolkata' },
         end:         { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
         colorId,
@@ -1352,7 +1330,7 @@ async function syncCalendarHeadless(onProgress) {
   }
 
   localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
-  return { synced: done, total: total, totalDays: days };
+  return { synced: done, total, totalDays: days };
 
   } finally {
     isSyncing = false; // always release mutex even on error
@@ -1489,6 +1467,11 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
   empRows.forEach((row, ri) => {
     const empName = row[1]?.trim() || '';
     const isMe    = empName.toLowerCase() === userName?.toLowerCase();
+    // FIX BUG 1: use the row's actual position in the UNFILTERED rows array.
+    // ri is the index in empRows (after blank-row filtering), but the Worker
+    // needs the unfiltered index so it can compute the correct sheet row number.
+    // Without this fix, admin edits write to the wrong row (off by 1+ rows).
+    const actualRowIdx = rows.indexOf(row);
     html += `<tr class="${isMe?'me':''}" data-n="${empName.toLowerCase()}">
       <td class="td-name" onclick="toggleEmpHighlight(this)" style="cursor:pointer" title="Click to highlight row">
         <span class="emp-dot" style="background:${isMe?'var(--accent)':'var(--muted)'}"></span>${empName}
@@ -1501,7 +1484,7 @@ function renderTeamTable(el, rows, days, dow, todayD, editable) {
       const isWk   = dow[d-1]===0||dow[d-1]===6;
       const isTd   = d===todayD;
       const disp   = code.length>4 ? code.replace('WFH-','W-') : code;
-      const extra  = editable ? `onclick="openShiftEdit(${ri},${d},'${code}','${empName}')" title="${empName} · Day ${d}: ${code}"` : `title="${code} · ${SHIFT_META[code]?.label||''}"`;
+      const extra  = editable ? `onclick="openShiftEdit(${actualRowIdx},${d},'${code}','${empName}')" title="${empName} · Day ${d}: ${code}"` : `title="${code} · ${SHIFT_META[code]?.label||''}"`;
       if (code === 'WO') woCount++;
       html += `<td class="${isWk?'wk':''} ${isTd?'td-today':''}" data-s="${base}">
         <span class="rc ${shiftClass(code)} ${editable?'editable':''}" ${extra}>${disp}</span>
@@ -1765,21 +1748,6 @@ async function saveShiftEdit(empRowIdx, day, oldCode, empName) {
     closeModal();
     showToast(`✅ ${empName} Day ${day}: ${oldCode} → ${newCode}`);
     await loadAdminPanel();
-    // ── Email: shift-change notification to affected employee ──────────────────
-    const affectedEmail = getEmpEmailFromMaster(empName);
-    if (affectedEmail) {
-      callAppsScriptDirect({
-        action:     'emailNotify',
-        scenario:   'editShift',
-        empEmail:   affectedEmail,
-        empName:    empName,
-        month:      selectedMonth,
-        day:        day,
-        oldCode:    oldCode,
-        newCode:    newCode,
-        adminEmail: userEmail
-      });
-    }
   } catch(e) {
     alert('Failed to save: ' + e.message);
   }
@@ -1802,25 +1770,6 @@ async function processRequest(localIdx, action, reqId, empName, dateStr, newCode
     showToast(`${action === 'Approved' ? '✅' : '❌'} Request ${action.toLowerCase()}`);
     checkPendingRequests();
     await loadAdminPanel();
-    // ── Email: approval/rejection confirmation to the employee ────────────────
-    // Look up employee email and request details from master + log
-    const affectedEmpEmail = getEmpEmailFromMaster(empName);
-    if (affectedEmpEmail) {
-      // Try to get request details from leaveLogCache for the email
-      const logEntry = leaveLogCache?.find ? null : null; // cache was just cleared
-      callAppsScriptDirect({
-        action:      'emailNotify',
-        scenario:    'processRequest',
-        empEmail:    affectedEmpEmail,
-        empName:     empName,
-        reqId:       reqId,
-        decision:    action,
-        month:       selectedMonth.replace('_', ' '),
-        dateAffected: dateStr,
-        newShift:    newCode,
-        adminEmail:  userEmail
-      });
-    }
   } catch(e) {
     alert('Failed to process request: ' + e.message);
   }

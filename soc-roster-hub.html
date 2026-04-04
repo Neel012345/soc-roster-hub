@@ -1254,7 +1254,14 @@ async function syncCalendarHeadless(onProgress) {
   // IMPORTANT: GH (Gazetted Holiday) is SKIPPED because these already appear
   // in the user's subscribed India holidays calendar — creating them again
   // would show every national holiday TWICE in Google Calendar.
-  const allDays = Object.entries(myShifts);
+  //
+  // CRITICAL: parseRosterRow() always generates keys "01"–"31" regardless of
+  // the actual month length (hardcoded loop). For months shorter than 31 days
+  // (April=30, June=30, Sep=30, Nov=30, Feb=28/29), the extra entries produce
+  // invalid dates like "2026-04-31" which Google Calendar rejects with 400 Bad
+  // Request — causing the sync to fail at the very end of every run. Filter to
+  // only the real days in the month to prevent this.
+  const allDays = Object.entries(myShifts).filter(([key]) => parseInt(key) <= days);
   const total   = allDays.length;
   let done = 0;
 

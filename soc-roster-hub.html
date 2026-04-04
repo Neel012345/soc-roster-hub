@@ -553,7 +553,7 @@ const SHEET_ID       = '1MY9aFaaUdSmqUP2V3gXt0emNMONlubgOfVqoV2mLpoY';
 const APPS_SCRIPT_URL = 'https://soc-roster-proxy.navoneel-itorizin-87e.workers.dev';
 const CLIENT_ID   = '135332498104-1jlvua53i6ujahtov3enj1och1ln3o0o.apps.googleusercontent.com';
 const ADMIN_EMAIL = 'navoneel.itorizin@gmail.com';
-const SCOPES      = 'openid email profile https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar';
+const SCOPES      = 'openid email profile https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.send';
 
 const MONTH_ORDER = ['January','February','March','April','May','June',
                      'July','August','September','October','November','December'];
@@ -592,6 +592,86 @@ function bgClass(code) {
 }
 // Safe version for inline use inside template literals (same logic)
 function shiftClassSafe(code) { return shiftClass(code); }
+
+/* ══════════════════════════════════════════════════════
+   EMAIL — Gmail API direct send
+   Uses the currently-logged-in user's OAuth token
+   (scope: gmail.send). Sends FROM the current user
+   TO any recipient. Silent fail — email is optional.
+══════════════════════════════════════════════════════ */
+async function sendEmailViaGmail(to, subject, bodyText) {
+  if (!to || !token) return;
+  try {
+    // Build RFC 2822 raw message, then base64url-encode it (Gmail API requirement)
+    const raw2822 = [
+      `To: ${to}`,
+      `Subject: ${subject}`,
+      'MIME-Version: 1.0',
+      'Content-Type: text/plain; charset=UTF-8',
+      '',
+      bodyText
+    ].join('\r\n');
+
+    // UTF-8 safe base64url (handles non-ASCII names, Devanagari etc.)
+    const encoder  = new TextEncoder();
+    const bytes    = encoder.encode(raw2822);
+    let   binary   = '';
+    bytes.forEach(b => { binary += String.fromCharCode(b); });
+    const raw = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+    await apiFetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ raw })
+    });
+  } catch(e) {
+    // Silent — never let email errors break the main workflow
+    console.warn('[Email] Gmail send failed →', to, ':', e.message);
+  }
+}
+
+/* ── Get all admin emails from employeeMaster state ── */
+function getAdminEmailsList() {
+  return employeeMaster.filter(e => e.isAdmin && e.email).map(e => e.email);
+}
+
+/* ══════════════════════════════════════════════════════
+   ROSTER-IN-CALENDAR — build daily team roster text
+   Called per-day inside syncCalendarHeadless so the
+   team's shift grouping appears in every calendar event
+   description. Zero extra API calls — uses the rows
+   data already loaded by getRoster().
+
+   allRows  : full roster rows array from getRoster()
+   dayNum   : integer 1–31
+
+   Output format (matches the screenshot):
+     MS  –  Ariv, Bhaskar, Shreya
+     GS  –  Kranthi, Pritam, Anubrata
+     AS  –  Rameez, Prithwiraj
+     NS  –  Ritisha, Navoneel
+══════════════════════════════════════════════════════ */
+function buildDailyRosterText(allRows, dayNum) {
+  const ORDER  = ['MS','GS','AS','NS','WFH-MS','WFH-GS','WFH-AS','WFH-NS'];
+  const SKIP   = new Set(['WO','GH','VL','CL','SL','CO']); // off/leave — exclude from team view
+  const groups = {};
+
+  allRows
+    .filter(r => r[1]?.toString().trim())          // skip blank name rows
+    .forEach(row => {
+      const code = (row[dayNum + 1] || '').toString().trim().toUpperCase() || 'WO';
+      if (SKIP.has(code) || !ORDER.includes(code)) return;
+      // First name only for compactness (e.g. "Navoneel Das" → "Navoneel")
+      const firstName = row[1].trim().split(/\s+/)[0];
+      (groups[code] = groups[code] || []).push(firstName);
+    });
+
+  const lines = ORDER
+    .filter(k => groups[k]?.length)
+    .map(k => `${k.padEnd(6)}–  ${groups[k].join(', ')}`);
+
+  return lines.length ? lines.join('\n') : '(No scheduled staff today)';
+}
 
 /* ══════════════════════════════════════════════════════
    STATE
@@ -1131,7 +1211,36 @@ async function submitLeaveRequest(dayKey, currentCode, empName, dateStr) {
     showToast('✅ Request submitted — pending admin approval');
     leaveLogCache = null;
     if (isAdmin) checkPendingRequests();
-    // Note: auto-sync is handled by the poller after admin approves the request
+
+    // ── Email notifications via Gmail API (uses current user's token) ─────────
+    // 1. Confirmation to the employee who submitted
+    const [m, y] = selectedMonth.split('_');
+    const confirmSubject = `[SOC Roster] Your ${type} has been received`;
+    const confirmBody =
+      `Hi ${empName},\n\n` +
+      `Your ${type} has been received and is pending admin approval.\n\n` +
+      `Date   : ${dateStr}\n` +
+      `Change : ${currentCode} → ${newCode}\n` +
+      (type === 'Shift Swap' ? `Swap   : ${partner}\n` : '') +
+      `Month  : ${m} ${y}\n\n` +
+      `You will receive another email once the admin reviews your request.\n\n— SOC Roster Hub`;
+    sendEmailViaGmail(userEmail, confirmSubject, confirmBody);
+
+    // 2. Notification to all admins
+    const adminSubject = `[SOC Roster] New ${type} — ${empName}`;
+    const adminBody =
+      `A new request has been submitted.\n\n` +
+      `Employee : ${empName}\n` +
+      `Type     : ${type}\n` +
+      `Date     : ${dateStr}\n` +
+      `Change   : ${currentCode} → ${newCode}\n` +
+      (type === 'Shift Swap' ? `Swap     : ${partner}\n` : '') +
+      `Month    : ${m} ${y}\n\n` +
+      `Please review this request in the SOC Roster Hub Admin Panel.`;
+    getAdminEmailsList().forEach(adminEmail => {
+      if (adminEmail !== userEmail) sendEmailViaGmail(adminEmail, adminSubject, adminBody);
+    });
+    // ─────────────────────────────────────────────────────────────────────────
   } catch(e) {
     alert('Failed to submit request: ' + e.message);
   }
@@ -1275,6 +1384,10 @@ async function syncCalendarHeadless(onProgress) {
   for (const [key, code] of allDays) {
     const d    = parseInt(key);
     const meta = SHIFT_META[code] || SHIFT_META['WO'];
+
+    // Build today's team roster text — zero extra API calls, uses already-loaded rows
+    const rosterText = buildDailyRosterText(rows, d);
+
     let eventBody;
 
     if (code === 'GH') {
@@ -1284,7 +1397,7 @@ async function syncCalendarHeadless(onProgress) {
       // All-day Week Off — end must be start + 1 day (Google Calendar requirement)
       eventBody = {
         summary:     '🔴 Week Off',
-        description: 'Week Off — no shift today',
+        description: `Week Off — no shift today\n\nToday's team:\n${rosterText}`,
         start:       { date: `${ym}-${key}` },
         end:         { date: nextDate(ym, key) },
         colorId:     '8',
@@ -1295,7 +1408,7 @@ async function syncCalendarHeadless(onProgress) {
       const leaveColorMap = { 'VL':'11', 'CL':'11', 'SL':'11', 'CO':'5' };
       eventBody = {
         summary:     `${meta.emoji || '📋'} ${meta.label}`,
-        description: `${meta.label} — SOC Roster`,
+        description: `${meta.label} — SOC Roster\n\nToday's team:\n${rosterText}`,
         start:       { date: `${ym}-${key}` },
         end:         { date: nextDate(ym, key) },
         colorId:     leaveColorMap[code] || '11',
@@ -1317,7 +1430,7 @@ async function syncCalendarHeadless(onProgress) {
                       code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
       eventBody = {
         summary:     `${meta.emoji} ${meta.label}`,
-        description: `${meta.start} – ${meta.end} IST`,
+        description: `${meta.start} – ${meta.end} IST\n\nToday's team:\n${rosterText}`,
         start:       { dateTime: startDT, timeZone: 'Asia/Kolkata' },
         end:         { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
         colorId,
@@ -1754,6 +1867,29 @@ async function saveShiftEdit(empRowIdx, day, oldCode, empName) {
 
     closeModal();
     showToast(`✅ ${empName} Day ${day}: ${oldCode} → ${newCode}`);
+
+    // ── Email: notify affected employee (admin sends from their Gmail) ────────
+    const empRecord  = employeeMaster.find(e => e.name.toLowerCase() === empName.toLowerCase());
+    const empEmail   = empRecord?.email;
+    if (empEmail && empEmail !== userEmail) {
+      const [m, y]    = selectedMonth.split('_');
+      const monthLabel = `${m} ${y}`;
+      sendEmailViaGmail(
+        empEmail,
+        `[SOC Roster] Your shift has been updated — ${monthLabel}, Day ${day}`,
+        `Hi ${empName},\n\n` +
+        `Your shift has been updated by the admin.\n\n` +
+        `Month : ${monthLabel}\n` +
+        `Day   : ${day}\n` +
+        `From  : ${oldCode}  (${SHIFT_META[oldCode]?.label || oldCode})\n` +
+        `To    : ${newCode}  (${SHIFT_META[newCode]?.label || newCode})\n\n` +
+        `Please check your updated roster in the SOC Roster Hub.\n` +
+        `If you have calendar auto-sync enabled, your SOC Roster calendar will update automatically.\n\n` +
+        `— SOC Roster Hub`
+      );
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     await loadAdminPanel();
   } catch(e) {
     alert('Failed to save: ' + e.message);
@@ -1775,6 +1911,28 @@ async function processRequest(localIdx, action, reqId, empName, dateStr, newCode
     rosterCache   = {};
 
     showToast(`${action === 'Approved' ? '✅' : '❌'} Request ${action.toLowerCase()}`);
+
+    // ── Email: notify employee of approval or rejection ────────────────────────
+    const empRecord  = employeeMaster.find(e => e.name.toLowerCase() === empName.toLowerCase());
+    const empEmail   = empRecord?.email;
+    if (empEmail) {
+      const approved = action === 'Approved';
+      sendEmailViaGmail(
+        empEmail,
+        `[SOC Roster] Your request has been ${action} — ${reqId}`,
+        `Hi ${empName},\n\n` +
+        `Your shift change request has been ${action.toLowerCase()} by the admin.\n\n` +
+        `Request : ${reqId}\n` +
+        `Date    : ${dateStr}\n` +
+        `New shift: ${newCode}\n\n` +
+        (approved
+          ? `Your roster has been updated. If you have calendar auto-sync enabled, your SOC Roster calendar will update automatically.`
+          : `No changes have been made to your roster. Please contact your admin if you have questions.`) +
+        `\n\n— SOC Roster Hub`
+      );
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     checkPendingRequests();
     await loadAdminPanel();
   } catch(e) {
